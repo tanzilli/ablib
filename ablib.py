@@ -1,4 +1,4 @@
-# ablib.py
+# ablib.py 
 #
 # Python functions collection to easily manage the I/O lines and 
 # Daisy modules with the following Acme Systems boards:
@@ -16,6 +16,7 @@
 
 try:
 	import os.path
+	import platform
 	import smbus
 	import time
 	from serial import Serial
@@ -27,6 +28,10 @@ try:
 except:
 	pass
 
+if platform.platform().find("Linux-2")!=-1:
+	legacy_id=True
+else: 	
+	legacy_id=False
 
 serial_ports = {
 	'D1' :  '/dev/ttyS2',
@@ -39,7 +44,6 @@ serial_ports = {
 	'D13':  '/dev/ttyS2'
 }
 
-		
 # Connectors pin assignments
 # 'pin name', 'kernel id'  # pin description
 
@@ -309,7 +313,7 @@ D10_kernel_ids = {
 
 #Terra D11
 D11_kernel_ids = {
-	'1' :   0, #3V3
+	'1' :   0,  #3V3
 	'2' : 112, #PC16
 	'3' : 113, #PC17
 	'4' : 114, #PC18
@@ -389,7 +393,8 @@ D16_kernel_ids = {
 	'8' :  63, #PA31.
 	'9' :  60, #PA28
 	'10':   0, #GND
-}
+}	
+
 
 # Kernel IDs descriptors for each connector
 connectors = {
@@ -416,32 +421,63 @@ connectors = {
 	'D16' :  D16_kernel_ids,
 }
 
+
+def get_gpio_path(kernel_id):
+	global legacy_id
+	kernel_id=kernel_id-32	
+	
+	if (legacy_id==True):
+		iopath="/sys/class/gpio/gpio%d" % (kernel_id+32)
+		
+	if (legacy_id==False):
+		print "Nuovo "	
+		iopath="/sys/class/gpio/pio" 
+		if kernel_id>=0 and kernel_id<=31:
+			iopath="%sA%d" % (iopath,kernel_id-0)
+		if kernel_id>=32 and kernel_id<=63:
+			iopath="%sB%d" % (iopath,kernel_id-32)
+		if kernel_id>=64 and kernel_id<=95:
+			iopath="%sC%d" % (iopath,kernel_id-64)
+			
+	return iopath		
+			
+
 def get_kernel_id(connector_name,pin_number):
 	return connectors[connector_name][pin_number]
 
 def export(kernel_id):
-	iopath='/sys/class/gpio/gpio' + str(kernel_id)
+	global legacy_id
+
+	iopath=get_gpio_path(kernel_id)
 	if not os.path.exists(iopath): 
 		f = open('/sys/class/gpio/export','w')
-		f.write(str(kernel_id))
+		if (legacy_id==True):
+			f.write(str(kernel_id))
+		else:
+			f.write(str(kernel_id-32))
 		f.close()
 
 def unexport(kernel_id):
-	iopath='/sys/class/gpio/gpio' + str(kernel_id)
+	global legacy_id
+
+	iopath=get_gpio_path(kernel_id)
 	if os.path.exists(iopath): 
 		f = open('/sys/class/gpio/unexport','w')
-		f.write(str(kernel_id))
+		if (legacy_id==True):
+			f.write(str(kernel_id))
+		else:
+			f.write(str(kernel_id-32))
 		f.close()
 
 def direction(kernel_id,direct):
-	iopath='/sys/class/gpio/gpio' + str(kernel_id)
+	iopath=get_gpio_path(kernel_id)
 	if os.path.exists(iopath): 
 		f = open(iopath + '/direction','w')
 		f.write(direct)
 		f.close()
 
 def set_value(kernel_id,value):
-	iopath='/sys/class/gpio/gpio' + str(kernel_id)
+	iopath=get_gpio_path(kernel_id)
 	if os.path.exists(iopath): 
 		f = open(iopath + '/value','w')
 		f.write(str(value))
@@ -449,7 +485,7 @@ def set_value(kernel_id,value):
 
 def get_value(kernel_id):
 	if kernel_id<>-1:
-		iopath='/sys/class/gpio/gpio' + str(kernel_id)
+		iopath=get_gpio_path(kernel_id)
 		if os.path.exists(iopath): 
 			f = open(iopath + '/value','r')
 			a=f.read()
@@ -457,7 +493,7 @@ def get_value(kernel_id):
 			return int(a)
 
 def set_edge(kernel_id,value):
-	iopath='/sys/class/gpio/gpio' + str(kernel_id)
+	iopath=get_gpio_path(kernel_id)
 	if os.path.exists(iopath): 
 		if value in ('none', 'rising', 'falling', 'both'):
 		    f = open(iopath + '/edge','w')
@@ -503,8 +539,8 @@ class Pin():
 		self.kernel_id=get_kernel_id(connector_id,pin_name)
 		export(self.kernel_id)
 		direction(self.kernel_id,direct)
-		
-		iopath='/sys/class/gpio/gpio' + str(self.kernel_id)
+
+		iopath=get_gpio_path(self.kernel_id)
 		if os.path.exists(iopath): 
 			self.fd = open(iopath + '/value','r')
 
@@ -690,7 +726,7 @@ class Daisy5():
 			export(self.kernel_id)
 			direction(self.kernel_id,'in')
 
-			iopath='/sys/class/gpio/gpio' + str(self.kernel_id)
+			iopath=get_gpio_path(self.kernel_id)
 			if os.path.exists(iopath): 
 				self.fd = open(iopath + '/value','r')
 
@@ -765,7 +801,7 @@ class Daisy8():
 			export(self.kernel_id)
 			direction(self.kernel_id,'in')
 
-			iopath='/sys/class/gpio/gpio' + str(self.kernel_id)
+			iopath=get_gpio_path(self.kernel_id)
 			if os.path.exists(iopath): 
 				self.fd = open(iopath + '/value','r')
 
@@ -817,7 +853,7 @@ class Daisy8():
 			
 
 
-class Daisy10(Serial):
+class Daisy10():
 
 	"""
 	DAISY-10 (RS422/RS485) related class
