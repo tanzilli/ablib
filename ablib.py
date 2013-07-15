@@ -430,7 +430,6 @@ def get_gpio_path(kernel_id):
 		iopath="/sys/class/gpio/gpio%d" % (kernel_id+32)
 		
 	if (legacy_id==False):
-		print "Nuovo "	
 		iopath="/sys/class/gpio/pio" 
 		if kernel_id>=0 and kernel_id<=31:
 			iopath="%sA%d" % (iopath,kernel_id-0)
