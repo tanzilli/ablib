@@ -825,12 +825,6 @@ class Daisy8():
 			else:
 				return True
 		return False
-
-#	def get(self):
-#		if get_value(self.kernel_id):
-#			return True
-#		else:
-#			return False
 			
 	def wait_edge(self,fd,callback):
 		counter=0	
@@ -1092,9 +1086,10 @@ class Daisy18():
 	http://www.acmesystems.it/DAISY-18
 	"""
 
+	fd=None
 	kernel_id=-1
 
-	inputs_first = {
+	line_first = {
 		'CH1' :  '2',
 		'CH2' :  '3',
 		'CH3' :  '4',
@@ -1105,7 +1100,7 @@ class Daisy18():
 		'I4'  :  '5'
 	}
 
-	inputs_second = {
+	line_second = {
 		'CH1' :  '6',
 		'CH2' :  '7',
 		'CH3' :  '8',
@@ -1116,30 +1111,54 @@ class Daisy18():
 		'I4'  :  '9'
 	}
 
-	def __init__(self,connector_id,position,inputs_id):
-		if (position=="first"): 
-			pin=self.inputs_first[inputs_id]
-		else:
-			pin=self.inputs_second[inputs_id]
-			
-		self.kernel_id = get_kernel_id(connector_id,pin)
 
-		if (self.kernel_id!=0):
-			export(self.kernel_id)
-			direction(self.kernel_id,'in')
+	def __init__(self,connector="D11",position="first",id="CH1"):
+		if (position=="first"): 
+			pin=self.line_first[id]
+		else:
+			pin=self.line_second[id]
+			
+		self.kernel_id = get_kernel_id(connector,pin)
+
+		export(self.kernel_id)
+		direction(self.kernel_id,'in')
+
+		iopath=get_gpio_path(self.kernel_id)
+		if os.path.exists(iopath): 
+			self.fd = open(iopath + '/value','r')
+		
+	def get(self):
+		if self.fd!=None:
+			self.fd.seek(0)
+			a=self.fd.read()
+			if int(a)==0:
+				return False
+			else:
+				return True
+		return False
 
 	def state(self):
-		if self.kernel_id<>-1:
-			iopath='/sys/class/gpio/gpio' + str(self.kernel_id)
-			if os.path.exists(iopath): 
-				f = open(iopath + '/value','r')
-				a=f.read()
-				f.close()
-				if int(a)==0:
-					return False
-				else:
-					return True
-		return False
+		return self.get()
+
+	def wait_edge(self,fd,callback):
+		counter=0	
+		po = select.epoll()
+		po.register(fd,select.EPOLLET)
+		while True:
+			events = po.poll()
+			if counter>0:	
+				callback()
+			counter=counter+1
+
+	def set_edge(self,value,callback):
+		if self.fd!=None:
+			set_edge(self.kernel_id,value)
+			thread.start_new_thread(self.wait_edge,(self.fd,callback))
+			return
+		else:		
+			thread.exit()
+
+
 
 class Daisy19():
 
