@@ -14,19 +14,16 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 
-try:
-	import os.path
-	import platform
-	import smbus
-	import time
-	from serial import Serial
-	import fcntl
-	import struct
-	import thread
-	import threading
-	import select
-except:
-	pass
+import os.path
+import platform
+import smbus
+import time
+from serial import Serial
+import fcntl
+import struct
+import thread
+import threading
+import select
 
 if platform.platform().find("Linux-2")!=-1:
 	legacy_id=True
@@ -421,6 +418,297 @@ connectors = {
 	'D16' :  D16_kernel_ids,
 }
 
+#New pin assigment table
+pin2kid = {
+	'N2'  :  96,
+	'N3'  :  97,
+	'N4'  :  98,
+	'N5'  :  99,
+	'N6'  : 100,
+	'N7'  : 101,
+	'N8'  : 102,
+	'N9' :  103,
+	'N10' : 104,
+	'N11' : 105,
+	'N12' : 106,
+	'N13' : 107,
+	'N14' : 108,
+	'N15' : 109,
+	'N16' : 110,
+	'N17' : 111,
+	'N18' : 112,
+	'N19' : 113,
+	'N20' : 114,
+	'N21' : 115,
+	'N22' : 116,
+	'N23' : 117,
+	'E2'  : 118,
+	'E3'  : 119,
+	'E4'  : 120,
+	'E5'  : 121,
+	'E6'  : 122,
+	'E7'  : 123,
+	'E8'  : 124,
+	'E9' :  125,
+	'E10' : 126,
+	'E11' : 127,
+	'S2'  :  53,
+	'S3'  :  52,
+	'S4'  :  51,
+	'S5'  :  50,
+	'S6'  :  49,
+	'S7'  :  48,
+	'S8'  :  47,
+	'S9' :   46,
+	'S10' :  45,
+	'S11' :  44,
+	'S12' :  43,
+	'S13' :  42,
+	'S14' :  41,
+	'S15' :  40,
+	'S16' :  39,
+	'S17' :  38,
+	'S18' :  37,
+	'S19' :  36,
+	'S20' :  35,
+	'S21' :  34,
+	'S22' :  33,
+	'S23' :  32,
+	'W9' :   54,
+	'W10' :  55,
+	'W11' :  56,
+	'W12' :  57,
+	'W13' :  58,
+	'W14' :  59,
+	'W15' :  60,
+	'W16' :  61,
+	'W17' :  62,
+	'W18' :  63,
+	'W20' :  75,
+	'W21' :  76,
+	'W22' :  77,
+	'W23' :  78,
+	'J7.3'  :  82,
+	'J7.4'  :  83,
+	'J7.5'  :  80,
+	'J7.6'  :  81,
+	'J7.7'  :  66,
+	'J7.8'  :  67,
+	'J7.9'  :  64,
+	'J7.10' :  65,
+	'J7.11' : 110,
+	'J7.12' : 111,
+	'J7.13' : 108,
+	'J7.14' : 109,
+	'J7.15' : 105,
+	'J7.16' : 106,
+	'J7.17' : 103,
+	'J7.18' : 104,
+	'J7.19' : 101,
+	'J7.20' : 102,
+	'J7.21' :  73,
+	'J7.22' :  72,
+	'J7.31' :  87,
+	'J7.32' :  86,
+	'J7.33' :  89,
+	'J7.34' :  88,
+	'J7.35' :  60,
+	'J7.36' :  59,
+	'J7.37' :  58,
+	'J7.38' :  57,
+	'J6.3'  :  92,
+	'J6.4'  :  71,
+	'J6.5'  :  70,
+	'J6.6'  :  93,
+	'J6.7'  :  90,
+	'J6.8'  :  69,
+	'J6.9'  :  68,
+	'J6.10' :  91,
+	'J6.13' :  75,
+	'J6.14' :  74,
+	'J6.15' :  77,
+	'J6.16' :  76,
+	'J6.17' :  85,
+	'J6.18' :  84,
+	'J6.19' :  95,
+	'J6.20' :  94,
+	'J6.21' :  63,
+	'J6.22' :  62,
+	'J6.24' :  38,
+	'J6.25' :  39,
+	'J6.26' :  41,
+	'J6.27' :  99,
+	'J6.28' :  98,
+	'J6.29' :  97,
+	'J6.30' :  96,
+	'J6.31' :  56,
+	'J6.32' :  55,
+	'J6.36' :  42,
+	'J6.37' :  54,
+	'J6.38' :  43,
+	'D1.1' :   0, #3V3
+	'D1.2' :  70, #PB6
+	'D1.3' :  71, #PB7
+	'D1.4' :  92, #PB28
+	'D1.5' :  93, #PB29
+	'D1.6' :   0, #N.C.
+	'D1.7' :  55, #PA23
+	'D1.8' :  56, #PA24
+	'D1.9' :   0, #5V0
+	'D1.10':   0, #GND
+	'D2.1' :   0, #3V3
+	'D2.2' :  63, #PA31
+	'D2.3' :  62, #PA30
+	'D2.4' :  61, #PA29
+	'D2.5' :  60, #PA28
+	'D2.6' :  59, #PA27
+	'D2.7' :  58, #PA26
+	'D2.8' :  57, #PA25
+	'D2.9' :  94, #PB30
+	'D2.10':   0, #GND
+	'D3.1' :   0, #3V3
+	'D3.2' :  68, #PB4
+	'D3.3' :  69, #PB5
+	'D3.4' :  90, #PB26
+	'D3.5' :  91, #PB27
+	'D3.6' :  86, #PB22
+	'D3.7' :  88, #PB24
+	'D3.8' :  89, #PB25
+	'D3.9' :  87, #PB23
+	'D3.10':   0, #GND
+	'D4.1' :   0, #3V3
+	'D4.2' :   0, #AVDD
+	'D4.3' :   0, #VREF
+	'D4.4' :   0, #AGND
+	'D4.5' :  96, #PC0
+	'D4.6' :  97, #PC1
+	'D4.7' :  98, #PC2
+	'D4.8' :  99, #PC3
+	'D4.9' :   0, #5V0
+	'D4.10':   0, #GND
+	'D5.1' :   0, #3V3
+	'D5.2' :  76, #PB12
+	'D5.3' :  77, #PB13
+	'D5.4' :  80, #PB16
+	'D5.5' :  81, #PB17
+	'D5.6' :  82, #PB18
+	'D5.7' :  83, #PB19
+	'D5.8' :  84, #PB20
+	'D5.9' :  85, #PB21
+	'D5.10':  0,  #GND
+	'D6.1' :   0, #3V3
+	'D6.2' :  74, #PB10
+	'D6.3' :  75, #PB11
+	'D6.4' : 104, #PC8
+	'D6.5' : 106, #PC10
+	'D6.6' :  95, #PB31
+	'D6.7' :  55, #PA23
+	'D6.8' :  56, #PA24
+	'D6.9' :   0, #5V0
+	'D6.10':   0, #GND
+	'D7.1' :  0,  #3V3
+	'D7.2' :  65, #PB1
+	'D7.3' :  64, #PB0
+	'D7.4' :  66, #PB2
+	'D7.5' :  67, #PB3
+	'D7.6' : 101, #PC5
+	'D7.7' : 100, #PC4
+	'D7.8' :  99, #PC3
+	'D7.9' :   0, #5V0
+	'D7.10':   0, #GND
+	'D8.1' :   0, #3V3
+	'D8.2' :  72, #PB8
+	'D8.3' :  73, #PB9
+	'D8.4' :   0, #N.C.
+	'D8.5' :   0, #N.C.
+	'D8.6' :   0, #N.C.
+	'D8.7' :  55, #PA23
+	'D8.8' :  56, #PA24
+	'D8.9' :   0, #5V0
+	'D8.10':   0, #GND
+	'D10.1' :   0, #3V3
+	'D10.2' : 118, #PC22
+	'D10.3' : 119, #PC23
+	'D10.4' : 120, #PC24
+	'D10.5' : 121, #PC25
+	'D10.6' : 122, #PC26
+	'D10.7' :  62, #PA30
+	'D10.8' :  63, #PA31
+	'D10.9' :   0, #5V0
+	'D10.10':   0, #GND
+	'D11.1' :   0,  #3V3
+	'D11.2' : 112, #PC16
+	'D11.3' : 113, #PC17
+	'D11.4' : 114, #PC18
+	'D11.5' : 115, #PC19
+	'D11.6' : 116, #PC20
+	'D11.7' : 117, #PC21
+	'D11.8' :  98, #PC2
+	'D11.9' :  99, #PC3
+	'D11.10':   0, #GND
+	'D12.1' :   0, #3V3
+	'D12.2' : 104, #PC8
+	'D12.3' : 105, #PC9
+	'D12.4' : 106, #PC10
+	'D12.5' : 107, #PC11
+	'D12.6' : 108, #PC12
+	'D12.7' : 109, #PC13
+	'D12.8' : 110, #PC14
+	'D12.9' : 111, #PC15
+	'D12.10':   0, #GND
+	'D13.1' :   0, #3V3
+	'D13.2' :  37, #PA5
+	'D13.3' :  38, #PA6
+	'D13.4' : 123, #PC27
+	'D13.5' : 124, #PC28
+	'D13.6' : 125, #PC29
+	'D13.7' :  96, #PC0
+	'D13.8' :  97, #PC1
+	'D13.9' :   0, #5V0
+	'D13.10':   0, #GND
+	'D14.1' :   0, #3V3
+	'D14.2' :   0, #3V3
+	'D14.3' :   0, #VREF
+	'D14.4' :   0, #GND
+	'D14.5' :  75, #PB11
+	'D14.6' :  76, #PB12
+	'D14.7' :  77, #PB13
+	'D14.8' :  78, #PB14
+	'D14.9' :   0, #5V0
+	'D14.10':   0, #GND
+	'D15.1' :   0, #3V3
+	'D15.2' :  44, #PA12
+	'D15.3' :  43, #PA11
+	'D15.4' :  45, #PA13
+	'D15.5' :  46, #PA14
+	'D15.6' :  39, #PA7
+	'D15.7' :  33, #PA1
+	'D15.8' :   0, #N.C.
+	'D15.9' :   0, #5V0
+	'D15.10':   0, #GND
+	'D16.1' :   0, #3V3
+	'D16.2' :  61, #PA29
+	'D16.3' :  59, #PA27
+	'D16.4' :  56, #PA24
+	'D16.5' :  57, #PA25
+	'D16.6' :  58, #PA26
+	'D16.7' :  62, #PA30
+	'D16.8' :  63, #PA31.
+	'D16.9' :  60, #PA28
+	'D16.10':   0, #GND
+}
+
+pinmode = {
+	"OUTPUT" : "low",
+	"LOW" : "low",
+	"HIGH" : "high",
+	"INPUT" : "inp",
+}
+
+pinlevel = {
+	"HIGH" : 1,
+	"LOW"  : 0,
+}
 
 def get_gpio_path(kernel_id):
 	global legacy_id
@@ -533,15 +821,34 @@ class Pin():
 	"""
 	kernel_id=None
 	fd=None
-	
-	def __init__(self,connector_id,pin_name,direct="low"):
-		self.kernel_id=get_kernel_id(connector_id,pin_name)
+
+
+	def __init__(self,pin,mode):
+		self.kernel_id=pin2kid[pin]
 		export(self.kernel_id)
-		direction(self.kernel_id,direct)
+		direction(self.kernel_id,pinmode[mode])
 
 		iopath=get_gpio_path(self.kernel_id)
 		if os.path.exists(iopath): 
 			self.fd = open(iopath + '/value','r')
+
+#	def __init__(self,connector_id,pin_name,direct="low"):
+#		self.kernel_id=get_kernel_id(connector_id,pin_name)
+#		export(self.kernel_id)
+#		direction(self.kernel_id,direct)
+
+#		iopath=get_gpio_path(self.kernel_id)
+#		if os.path.exists(iopath): 
+#			self.fd = open(iopath + '/value','r')
+
+	def digitalWrite(self,level):
+		set_value(self.kernel_id,pinlevel[level])
+
+	def high(self):
+		set_value(self.kernel_id,1)
+		
+	def low(self):
+		set_value(self.kernel_id,0)
 
 	def on(self):
 		set_value(self.kernel_id,1)
