@@ -702,7 +702,7 @@ pinmode = {
 	"OUTPUT" : "low",
 	"LOW" : "low",
 	"HIGH" : "high",
-	"INPUT" : "inp",
+	"INPUT" : "in",
 }
 
 pinlevel = {
