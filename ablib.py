@@ -862,6 +862,8 @@ class Pin():
 	def get_value(self):
 		return get_value(self.kernel_id)
 
+	get = get_value
+
 	def wait_edge(self,fd,callback,debouncingtime):
 		debouncingtime=debouncingtime/1000.0 # converto in millisecondi
 		timestampprec=time.time()
