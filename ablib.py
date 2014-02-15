@@ -862,20 +862,26 @@ class Pin():
 	def get_value(self):
 		return get_value(self.kernel_id)
 
-	def wait_edge(self,fd,callback):
-		counter=0	
+	get = get_value
+
+	def wait_edge(self,fd,callback,debouncingtime):
+		debouncingtime=debouncingtime/1000.0 # converto in millisecondi
+		timestampprec=time.time()
+		counter=0
 		po = select.epoll()
 		po.register(fd,select.EPOLLET)
 		while True:
 			events = po.poll()
-			if counter>0:	
+			timestamp=time.time()
+			if (timestamp-timestampprec>debouncingtime) and counter>0:
 				callback()
 			counter=counter+1
+			timestampprec=timestamp
 
-	def set_edge(self,value,callback):
+	def set_edge(self,value,callback,debouncingtime=0):
 		if self.fd!=None:
 			set_edge(self.kernel_id,value)
-			thread.start_new_thread(self.wait_edge,(self.fd,callback))
+			thread.start_new_thread(self.wait_edge,(self.fd,callback,debouncingtime))
 			return
 		else:		
 			thread.exit()
