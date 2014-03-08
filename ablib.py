@@ -38,7 +38,9 @@ serial_ports = {
 	'D6' :  '/dev/ttyS4',
 	'D8' :  '/dev/ttyS3',
 	'D10':  '/dev/ttyS4',
-	'D13':  '/dev/ttyS2'
+	'D13':  '/dev/ttyS2',
+	'D17':  '/dev/ttyS1'
+
 }
 
 # Connectors pin assignments
