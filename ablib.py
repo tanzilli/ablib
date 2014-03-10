@@ -816,6 +816,15 @@ def soft_pwm_steps(kernel_id,value):
 		f.write(str(value))
 		f.close()
 
+def existI2Cdevice(bus_id,i2c_address):
+	i2c_bus = smbus.SMBus(bus_id)
+	try:
+		i2c_bus.write_byte(i2c_address,0x00)
+		return True
+	except:
+		return False
+
+
 class Pin():
 	"""
 	FOX and AriaG25 pins related class
@@ -1613,15 +1622,21 @@ class Daisy24():
 	"""
 
 	i2c_bus=-1
+
 	lcd_address = 0x3E
+
+	# I2C expansion address can be:
+	# PCF8574T  0x27
+	# PCF8574AT 0x3F 
 	exp_address = 0x27
+
 	backled = -1
 	K0 = -1 
 	K1 = -1 
 	K2 = -1 
 	K3 = -1 
 
-	def __init__(self,bus_id=0,exp_address=0x27):
+	def __init__(self,bus_id=0,exp_address=-1):
 		self.exp_address = exp_address
 		self.i2c_bus = smbus.SMBus(bus_id)
 		self.sendcommand(0x38)
@@ -1632,10 +1647,17 @@ class Daisy24():
 		self.sendcommand(0x6F) #Follower control
 		self.sendcommand(0x0C) #Display ON
 		self.clear()
+
+		#if (exp_address==-1):
+		#	try:
+		#		self.K0=Daisy22(bus_id,exp_address,0)
+		#	catch:	
+
 		self.K0=Daisy22(bus_id,exp_address,0)
 		self.K1=Daisy22(bus_id,exp_address,1)
 		self.K2=Daisy22(bus_id,exp_address,2)
 		self.K3=Daisy22(bus_id,exp_address,3)
+		
 		self.backled=Daisy22(bus_id,exp_address,4)
 		return
 
