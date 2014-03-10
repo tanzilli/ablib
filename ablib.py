@@ -6,8 +6,7 @@
 # FOX Board G20 (http://www.acmesystems.it/FOXG20)
 # ARIA G25 (http://www.acmesystems.it/aria) 
 #
-# (C) 2013 Sergio Tanzilli <tanzilli@acmesystems.it>
-# (C) 2012 Acme Systems srl (http://www.acmesystems.it)
+# (C) 2014 Sergio Tanzilli <tanzilli@acmesystems.it>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1615,7 +1614,7 @@ class Daisy24():
 
 	i2c_bus=-1
 	lcd_address = 0x3E
-	exp_address = -1
+	exp_address = 0x27
 	backled = -1
 	K0 = -1 
 	K1 = -1 
