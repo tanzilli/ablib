@@ -4,7 +4,9 @@
 # Daisy modules with the following Acme Systems boards:
 # TERRA Board (http://www.acmesystems.it/terra)
 # FOX Board G20 (http://www.acmesystems.it/FOXG20)
-# ARIA G25 (http://www.acmesystems.it/aria) 
+# ARIA G25 SoM (http://www.acmesystems.it/aria) 
+# ARIETTA G25 SoM (http://www.acmesystems.it/arietta)
+# ACQUA A5 SoM (http://www.acmesystems.it/acqua)
 #
 # (C) 2014 Sergio Tanzilli <tanzilli@acmesystems.it>
 #
@@ -824,6 +826,28 @@ def existI2Cdevice(bus_id,i2c_address):
 	except:
 		return False
 
+def pinname2kernelid(pinname):
+	"""
+	Return the Kernel ID of any Pin using the MCU name
+	or the board name
+	"""
+
+	offset=-1
+	if pinname[0:2]=="PA":
+		offset=32
+	if pinname[0:2]=="PB":
+		offset=64
+	if pinname[0:2]=="PC":
+		offset=96
+	if pinname[0:2]=="PD":
+		offset=128
+	if pinname[0:2]=="PE":
+		offset=160
+
+	if offset!=-1:
+		return offset+int(pinname[2:4])
+	else:	
+		return pin2kid[pinname]
 
 class Pin():
 	"""
@@ -834,7 +858,7 @@ class Pin():
 
 
 	def __init__(self,pin,mode):
-		self.kernel_id=pin2kid[pin]
+		self.kernel_id=pinname2kernelid(pin)
 		export(self.kernel_id)
 		direction(self.kernel_id,pinmode[mode])
 
