@@ -19,7 +19,7 @@ import os.path
 import platform
 import smbus
 import time
-from serial import Serial
+import serial
 import fcntl
 import struct
 import thread
@@ -1175,7 +1175,8 @@ class Daisy7():
 	i2c_bus=-1
 	acc_address=0x18
 	gyro_address=0x68
-
+	ser=-1
+	
 	#converts 16 bit two's compliment reading to signed int
 	def getSignedNumber(self,number):
 		if number & (1 << 15):
@@ -1184,6 +1185,16 @@ class Daisy7():
 			return number & 65535
 
 	def __init__(self,bus_id=0):
+		self.ser = serial.Serial(
+			port="/dev/ttyS4", 
+			baudrate=115200, 
+			timeout=1,
+			parity=serial.PARITY_NONE,
+			stopbits=serial.STOPBITS_ONE,
+			bytesize=serial.EIGHTBITS
+		)  
+		self.ser.flushInput()
+
 		self.i2c_bus = smbus.SMBus(bus_id)
 		
 		#Accellerometer setup
@@ -1196,6 +1207,30 @@ class Daisy7():
 		#Full 2000dps to control REG4
 		self.i2c_bus.write_byte_data(self.gyro_address,self.l3g4200d_register['CTRL_REG4'],0x20)
 		return
+
+	def gps_read(self):
+		#Read a line from the GPS chip
+		NMEA_line = self.ser.readline()
+
+		#Split the fields in NMEA line
+		values=NMEA_line.split(",")
+
+		#Select just the GGA message line with GPS quality indicator = 1
+		#(see the GPS datasheet)
+		if values[0]=="$GPGGA" and values[6]=="1":
+			H=float(values[2][0:2])
+			M=float(values[2][2:4])+(float(values[2][5:9])/10000)
+			latitude=H+M/60
+
+			H=float(values[4][0:3])
+			M=float(values[4][3:5])+(float(values[4][6:10])/10000)
+			longitude=H+M/60
+			
+			rtc= {"latitude":latitude,"longitude":longitude}
+			return rtc
+		else:
+			rtc= {"latitude":0,"longitude":0}
+			return rtc
 
 	def acc_read(self):
 		while True:
