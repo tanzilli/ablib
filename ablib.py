@@ -1107,6 +1107,163 @@ class Daisy5():
 		else:		
 			thread.exit()
 
+class Daisy7():
+
+	"""
+	DAISY-7 (GPR/MEMS) related class
+	http://www.acmesystems.it/DAISY-7
+	"""
+
+	# Linear accellerometer registers
+	lis331dlh_register = {
+		'WHO_AM_I'			:	0x0F,
+		'CTRL_REG1'			:	0x20,
+		'CTRL_REG2'			:	0x21,	
+		'CTRL_REG3'			:	0x22,	
+		'CTRL_REG4'			:	0x23,
+		'CTRL_REG5'			:	0x24,	
+		'HP_FILTER_RESET'	:	0x25,
+		'REFERENCE'			:	0x26,
+		'STATUS_REG'		:   0x27,
+		'OUT_X_L'			:	0x28,	
+		'OUT_X_H'			:	0x29,	
+		'OUT_Y_L'			:	0x2A,	
+		'OUT_Y_H'			:	0x2B,	
+		'OUT_Z_L'			:	0x2C,	
+		'OUT_Z_H'			:	0x2D,
+		'INT1_CFG'			:	0x30,
+		'INT1_SRC'			:	0x31,
+		'INT1_THS'			:	0x32,
+		'INT1_DURATION'		:	0x33,
+		'INT2_CFG'			:	0x34,
+		'INT2_SRC' 			:	0x35,
+		'INT1_THS'			:	0x36,
+		'INT2_DURATION'		:	0x37,
+	}
+
+	# Gyroscope registers
+	l3g4200d_register = {
+		'WHO_AM_I'			:	0x0F,
+		'CTRL_REG1'			:	0x20,
+		'CTRL_REG2'			:	0x21,	
+		'CTRL_REG3'			:	0x22,	
+		'CTRL_REG4'			:	0x23,
+		'CTRL_REG5'			:	0x24,	
+		'REFERENCE'			:	0x25,
+		'OUT_TEMP'			:	0x26,
+		'STATUS_REG'		:	0x27,
+		'OUT_X_L'			:	0x28,	
+		'OUT_X_H'			:	0x29,	
+		'OUT_Y_L'			:	0x2A,	
+		'OUT_Y_H'			:	0x2B,	
+		'OUT_Z_L'			:	0x2C,	
+		'OUT_Z_H'			:	0x2D,
+		'FIFO_CTRL_REG'		:	0x2E,
+		'FIFO_SRC_REG'		:	0x2F,
+		'INT1_CFG'			:	0x30,
+		'INT1_SRC'			:	0x31,
+		'INT1_THS_XH'		:	0x32,
+		'INT1_THS_XL'		:	0x33,
+		'INT1_THS_YH'		:	0x34,
+		'INT1_THS_YL'		:	0x35,
+		'INT1_THS_ZH'		:	0x36,
+		'INT1_THS_ZL'		:	0x37,
+		'INT1_DURATION'		:	0x38,
+	}
+
+
+	i2c_bus=-1
+	acc_address=0x18
+	gyro_address=0x68
+
+	#converts 16 bit two's compliment reading to signed int
+	def getSignedNumber(self,number):
+		if number & (1 << 15):
+			return number | ~65535
+		else:
+			return number & 65535
+
+	def __init__(self,bus_id=0):
+		self.i2c_bus = smbus.SMBus(bus_id)
+		
+		#Accellerometer setup
+		#Chip in Normal mode. Turn on all axis
+		self.i2c_bus.write_byte_data(self.acc_address,self.lis331dlh_register['CTRL_REG1'],0x27)	
+
+		#Gyroscope setup
+		#Chip in Normal mode. Turn on all axis
+		self.i2c_bus.write_byte_data(self.gyro_address,self.l3g4200d_register['CTRL_REG1'],0x0F)
+		#Full 2000dps to control REG4
+		self.i2c_bus.write_byte_data(self.gyro_address,self.l3g4200d_register['CTRL_REG4'],0x20)
+		return
+
+	def acc_read(self):
+		while True:
+			self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['STATUS_REG'])		
+			status_reg=self.i2c_bus.read_byte(self.acc_address)		
+			if (status_reg&0x08)!=0:
+				break	
+
+		#Read X axis value
+		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_X_L'])		
+		OUT_X_L=self.i2c_bus.read_byte(self.acc_address)		
+		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_X_H'])		
+		OUT_X_H=self.i2c_bus.read_byte(self.acc_address)		
+
+		#Read Y axis value
+		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_Y_L'])		
+		OUT_Y_L=self.i2c_bus.read_byte(self.acc_address)		
+		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_Y_H'])		
+		OUT_Y_H=self.i2c_bus.read_byte(self.acc_address)		
+
+		#Read Z axis value
+		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_Z_L'])		
+		OUT_Z_L=self.i2c_bus.read_byte(self.acc_address)		
+		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_Z_H'])		
+		OUT_Z_H=self.i2c_bus.read_byte(self.acc_address)		
+
+		xValue=self.getSignedNumber(OUT_X_H<<8|OUT_X_L)
+		yValue=self.getSignedNumber(OUT_Y_H<<8|OUT_Y_L)
+		zValue=self.getSignedNumber(OUT_Z_H<<8|OUT_Z_L)
+
+		values = {"X":xValue,"Y":yValue,"Z":zValue}	
+		return values
+
+	def gyro_read(self):
+		while True:
+			self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['STATUS_REG'])		
+			status_reg=self.i2c_bus.read_byte(self.gyro_address)		
+			if (status_reg&0x08)!=0:
+				break
+
+		#Read X axis value
+		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_X_L'])		
+		OUT_X_L=self.i2c_bus.read_byte(self.gyro_address)		
+		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_X_H'])		
+		OUT_X_H=self.i2c_bus.read_byte(self.gyro_address)		
+		xValue=self.getSignedNumber(OUT_X_H<<8 | OUT_X_L)
+
+		#Read Y axis value
+		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_Y_L'])		
+		OUT_Y_L=self.i2c_bus.read_byte(self.gyro_address)		
+		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_Y_H'])		
+		OUT_Y_H=self.i2c_bus.read_byte(self.gyro_address)		
+		yValue=self.getSignedNumber(OUT_Y_H<<8 | OUT_Y_L)
+
+		#Read Z axis value
+		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_Z_L'])		
+		OUT_Z_L=self.i2c_bus.read_byte(self.gyro_address)		
+		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_Z_H'])		
+		OUT_Z_H=self.i2c_bus.read_byte(self.gyro_address)		
+		zValue=self.getSignedNumber(OUT_Z_H<<8 | OUT_Z_L)
+
+		xValue=self.getSignedNumber(OUT_X_H<<8|OUT_X_L)
+		yValue=self.getSignedNumber(OUT_Y_H<<8|OUT_Y_L)
+		zValue=self.getSignedNumber(OUT_Z_H<<8|OUT_Z_L)
+
+		values = {"X":xValue,"Y":yValue,"Z":zValue}	
+		return values
+
 class Daisy8():
 
 	"""
