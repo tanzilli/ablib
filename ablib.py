@@ -731,7 +731,6 @@ def get_gpio_path(kernel_id):
 			iopath="%sC%d" % (iopath,kernel_id-64)
 			
 	return iopath		
-			
 
 def get_kernel_id(connector_name,pin_number):
 	return connectors[connector_name][pin_number]
@@ -850,6 +849,29 @@ def pinname2kernelid(pinname):
 	else:	
 		return pin2kid[pinname]
 
+def readU8(bus,address,reg):
+  result = bus.read_byte_data(address, reg)
+  return result
+
+def readS8(bus,address,reg):
+	result = bus.read_byte_data(address, reg)
+	if result > 127: 
+		result -= 256
+	return result
+
+def readS16(bus,address,register):
+	hi = readS8(bus,address,register)
+	lo = readU8(bus,address,register+1)
+	return (hi << 8) + lo
+
+def readU16(bus,address,register):
+	hi = readU8(bus,address,register)
+	lo = readU8(bus,address,register+1)
+	return (hi << 8) + lo
+
+def write8(bus,address,reg,value):
+	bus.write_byte_data(address,reg,value)
+
 class Pin():
 	"""
 	FOX and AriaG25 pins related class
@@ -866,15 +888,6 @@ class Pin():
 		iopath=get_gpio_path(self.kernel_id)
 		if os.path.exists(iopath): 
 			self.fd = open(iopath + '/value','r')
-
-#	def __init__(self,connector_id,pin_name,direct="low"):
-#		self.kernel_id=get_kernel_id(connector_id,pin_name)
-#		export(self.kernel_id)
-#		direction(self.kernel_id,direct)
-
-#		iopath=get_gpio_path(self.kernel_id)
-#		if os.path.exists(iopath): 
-#			self.fd = open(iopath + '/value','r')
 
 	def digitalWrite(self,level):
 		set_value(self.kernel_id,pinlevel[level])
@@ -920,7 +933,8 @@ class Pin():
 			return
 		else:		
 			thread.exit()
-
+			
+## DAISY-2 #############################################################
 
 class Daisy2():
 
@@ -1004,6 +1018,8 @@ class Daisy2():
 	def stop(self):
 		soft_pwm_steps(self.STEP_kernel_id,0)
 
+## DAISY-4 #############################################################
+
 class Daisy4():
 
 	"""
@@ -1043,8 +1059,10 @@ class Daisy4():
 			set_value(self.kernel_id,0)
 		else:
 			pass
-	
-	
+
+## DAISY-5 #############################################################
+
+
 class Daisy5():
 
 	"""
@@ -1108,6 +1126,8 @@ class Daisy5():
 		else:		
 			thread.exit()
 
+## DAISY-7 #############################################################
+
 class Daisy7():
 
 	"""
@@ -1115,8 +1135,8 @@ class Daisy7():
 	http://www.acmesystems.it/DAISY-7
 	"""
 
-	# Linear accellerometer registers
-	lis331dlh_register = {
+	# Linear accellerometer registers LIS331DLH
+	acc_registers = {
 		'WHO_AM_I'			:	0x0F,
 		'CTRL_REG1'			:	0x20,
 		'CTRL_REG2'			:	0x21,	
@@ -1140,10 +1160,13 @@ class Daisy7():
 		'INT2_SRC' 			:	0x35,
 		'INT1_THS'			:	0x36,
 		'INT2_DURATION'		:	0x37,
+
+		#I2C Address
+		'I2C_ADDR'			: 	0x18,		
 	}
 
-	# Gyroscope registers
-	l3g4200d_register = {
+	# Gyroscope registers L3G4200D
+	gyro_registers = {
 		'WHO_AM_I'			:	0x0F,
 		'CTRL_REG1'			:	0x20,
 		'CTRL_REG2'			:	0x21,	
@@ -1170,34 +1193,85 @@ class Daisy7():
 		'INT1_THS_ZH'		:	0x36,
 		'INT1_THS_ZL'		:	0x37,
 		'INT1_DURATION'		:	0x38,
+
+		#I2C Address
+		'I2C_ADDR'			: 	0x68,		
 	}
 
-	# Compass registers
-	hmc5883l_register = {
+	# Compass registers HMC5883L
+	compass_registers = {
 		'CONF_REG_A'		:	0x00,
 		'CONF_REG_B'		:	0x01,
-		'MODE_REG'			:	0x02,	
-		'OUT_X_H'			:	0x03,	
+		'MODE_REG'			:	0x02,
+		'OUT_X_H'			:	0x03,
 		'OUT_X_L'			:	0x04,
-		'OUT_Z_H'			:	0x05,	
+		'OUT_Z_H'			:	0x05,
 		'OUT_Z_L'			:	0x06,
-		'OUT_Y_H'			:	0x07,	
+		'OUT_Y_H'			:	0x07,
 		'OUT_Y_L'			:	0x08,
 		'STATUS_REG'		:   0x09,
 		'ID_REG_A'			:	0x0A,
 		'ID_REG_B'			:	0x0B,
 		'ID_REG_C'			:	0x0C,
+		
+		#I2C Address
+		'I2C_ADDR'			: 	0x1E,		
 	}
 
 	MeasurementContinuous = 0x00
 	MeasurementSingleShot = 0x01
 	MeasurementIdle = 0x03
 
+	# Barometer registers BMP085
+	baro_registers = {
+	
+		#Registers address
+		'CAL_AC1'           :   0xAA,
+		'CAL_AC2'			: 	0xAC,
+		'CAL_AC3'			:	0xAE,
+		'CAL_AC4'			:	0xB0,
+		'CAL_AC5'			:	0xB2,
+		'CAL_AC6'			:	0xB4,
+		'CAL_B1'			:	0xB6,
+		'CAL_B2'			:	0xB8,
+		'CAL_MB'			:	0xBA,
+		'CAL_MC'			:	0xBC,
+		'CAL_MD'			:	0xBE,
+		'CONTROL'			:	0xF4,
+		'TEMPDATA'			:	0xF6,
+		'PRESSUREDATA'		:	0xF6,
+		'READTEMPCMD'		:	0x2E,
+		'READPRESSURECMD'	:	0x34,
+
+		#Buffer for calibration data
+		'BUF_AC1' 			:	0,
+		'BUF_AC2' 			:	0,
+		'BUF_AC3' 			:	0,
+		'BUF_AC4' 			:	0,
+		'BUF_AC5' 			:	0,
+		'BUF_AC6' 			:	0,
+		'BUF_B1' 			:	0,
+		'BUF_B2' 			:	0,
+		'BUF_MB' 			:	0,
+		'BUF_MC' 			:	0,
+		'BUF_MD' 			:	0,
+		
+		#Operating mode
+		'ULTRALOWPOWER' 	:	0,
+		'STANDARD'			:	1,
+		'HIGHRES'			: 	2,
+		'ULTRAHIGHRES'		: 	3,		
+		
+		#I2C Address
+		'I2C_ADDR'			: 	0x77,		
+	}	
+
 	i2c_bus=-1
 	acc_address=0x18
 	gyro_address=0x68
 	compass_address=0x1E
 	ser=-1
+	mode = baro_registers["STANDARD"]
 	
 	def __init__(self,bus_id=0):
 		self.ser = serial.Serial(
@@ -1212,15 +1286,18 @@ class Daisy7():
 
 		self.i2c_bus = smbus.SMBus(bus_id)
 		
+		if self.checkChipAdresses()==False:
+			raise IOError, "I2C chip not found"
+				
 		#Accellerometer setup
 		#Chip in Normal mode. Turn on all axis
-		self.i2c_bus.write_byte_data(self.acc_address,self.lis331dlh_register['CTRL_REG1'],0x27)	
+		self.i2c_bus.write_byte_data(self.acc_address,self.acc_registers['CTRL_REG1'],0x27)	
 
 		#Gyroscope setup
 		#Chip in Normal mode. Turn on all axis
-		self.i2c_bus.write_byte_data(self.gyro_address,self.l3g4200d_register['CTRL_REG1'],0x0F)
+		self.i2c_bus.write_byte_data(self.gyro_address,self.gyro_registers['CTRL_REG1'],0x0F)
 		#Full 2000dps to control REG4
-		self.i2c_bus.write_byte_data(self.gyro_address,self.l3g4200d_register['CTRL_REG4'],0x20)
+		self.i2c_bus.write_byte_data(self.gyro_address,self.gyro_registers['CTRL_REG4'],0x20)
 		
 		#Compass setup
 		self.compass_setScale(1.3)
@@ -1233,26 +1310,51 @@ class Daisy7():
 		ret_str += "Accellerator: "+"\n"       
 		ret_str += "  Axis X: "+str(x)+"\n"       
 		ret_str += "  Axis Y: "+str(y)+"\n" 
-		ret_str += "  Axis Z: "+str(z)+"\n" 
+		ret_str += "  Axis Z: "+str(z)+"\n\n" 
 
 		(x, y, z) = self.gyro_getAxes()
 		ret_str += "Gyroscope: "+"\n"       
 		ret_str += "  Axis X: "+str(x)+"\n"       
 		ret_str += "  Axis Y: "+str(y)+"\n" 
-		ret_str += "  Axis Z: "+str(z)+"\n" 
+		ret_str += "  Axis Z: "+str(z)+"\n\n" 
 
 		(x, y, z) = self.compass_getAxes()
 		ret_str += "Compass: "+"\n"       
 		ret_str += "  Axis X: "+str(x)+"\n"       
 		ret_str += "  Axis Y: "+str(y)+"\n" 
-		ret_str += "  Axis Z: "+str(z)+"\n" 
+		ret_str += "  Axis Z: "+str(z)+"\n\n" 
+
+		ret_str += "Barometer: "+"\n"       
+		ret_str += "  Temperature: "+str(self.baro_getTemperature())+"\n"       
+		ret_str += "     Pressure: "+str(self.baro_getPressure())+"\n"       
+		ret_str += "     Altitude: "+str(self.baro_getAltitude())+"\n\n"       
 
 		(latitude,longitude) = self.gps_getCoordinates()
 		ret_str += "GPS: "+"\n"       
 		ret_str += "  Latidute: "+str(latitude)+"\n"       
-		ret_str += "  Longitude: "+str(longitude)+"\n" 
+		ret_str += "  Longitude: "+str(longitude)+"\n\n" 
 		
 		return ret_str
+
+	def checkChipAdresses(self):
+		rtc=True
+		
+		try:
+			self.i2c_bus.write_byte(self.acc_registers['I2C_ADDR'],self.acc_registers['WHO_AM_I'])		
+			print "Accellerometer: 0x%02X" % self.i2c_bus.read_byte(self.acc_address)	
+		except IOError, err:
+			print "Accellerometer not found"	
+			rtc=False
+		
+		try:
+			self.i2c_bus.write_byte(self.gyro_registers['I2C_ADDR'],self.gyro_registers['WHO_AM_I'])		
+			print "Gyroscope:      0x%02X" % self.i2c_bus.read_byte(self.gyro_address)	
+		except IOError, err:
+			print "Gyroscope not found"	
+			rtc=False
+			
+		return rtc
+
 
 	#converts 16 bit two's compliment reading to signed int
 	def getSignedNumber(self,number):
@@ -1261,9 +1363,7 @@ class Daisy7():
 		else:
 			return number & 65535
 
-	####################
 	# GPS functions
-	####################
 	
 	def gps_getCoordinates(self):
 		#Read a line from the GPS chip
@@ -1287,33 +1387,31 @@ class Daisy7():
 		else:
 			return (-1,-1)
 
-	####################
-	# ACC functions
-	####################
+	# ACCELLEROMETER functions
 
 	def acc_getAxes(self):
 		while True:
-			self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['STATUS_REG'])		
+			self.i2c_bus.write_byte(self.acc_address,self.acc_registers['STATUS_REG'])		
 			status_reg=self.i2c_bus.read_byte(self.acc_address)		
 			if (status_reg&0x08)!=0:
 				break	
 
 		#Read X axis value
-		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_X_L'])		
+		self.i2c_bus.write_byte(self.acc_address,self.acc_registers['OUT_X_L'])		
 		OUT_X_L=self.i2c_bus.read_byte(self.acc_address)		
-		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_X_H'])		
+		self.i2c_bus.write_byte(self.acc_address,self.acc_registers['OUT_X_H'])		
 		OUT_X_H=self.i2c_bus.read_byte(self.acc_address)		
 
 		#Read Y axis value
-		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_Y_L'])		
+		self.i2c_bus.write_byte(self.acc_address,self.acc_registers['OUT_Y_L'])		
 		OUT_Y_L=self.i2c_bus.read_byte(self.acc_address)		
-		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_Y_H'])		
+		self.i2c_bus.write_byte(self.acc_address,self.acc_registers['OUT_Y_H'])		
 		OUT_Y_H=self.i2c_bus.read_byte(self.acc_address)		
 
 		#Read Z axis value
-		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_Z_L'])		
+		self.i2c_bus.write_byte(self.acc_address,self.acc_registers['OUT_Z_L'])		
 		OUT_Z_L=self.i2c_bus.read_byte(self.acc_address)		
-		self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['OUT_Z_H'])		
+		self.i2c_bus.write_byte(self.acc_address,self.acc_registers['OUT_Z_H'])		
 		OUT_Z_H=self.i2c_bus.read_byte(self.acc_address)		
 
 		xValue=self.getSignedNumber(OUT_X_H<<8|OUT_X_L)
@@ -1322,35 +1420,33 @@ class Daisy7():
 
 		return (xValue,yValue,zValue)
 
-	####################
 	# GYRO functions
-	####################
 
 	def gyro_getAxes(self):
 		while True:
-			self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['STATUS_REG'])		
+			self.i2c_bus.write_byte(self.gyro_address,self.gyro_registers['STATUS_REG'])		
 			status_reg=self.i2c_bus.read_byte(self.gyro_address)		
 			if (status_reg&0x08)!=0:
 				break
 
 		#Read X axis value
-		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_X_L'])		
+		self.i2c_bus.write_byte(self.gyro_address,self.gyro_registers['OUT_X_L'])		
 		OUT_X_L=self.i2c_bus.read_byte(self.gyro_address)		
-		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_X_H'])		
+		self.i2c_bus.write_byte(self.gyro_address,self.gyro_registers['OUT_X_H'])		
 		OUT_X_H=self.i2c_bus.read_byte(self.gyro_address)		
 		xValue=self.getSignedNumber(OUT_X_H<<8 | OUT_X_L)
 
 		#Read Y axis value
-		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_Y_L'])		
+		self.i2c_bus.write_byte(self.gyro_address,self.gyro_registers['OUT_Y_L'])		
 		OUT_Y_L=self.i2c_bus.read_byte(self.gyro_address)		
-		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_Y_H'])		
+		self.i2c_bus.write_byte(self.gyro_address,self.gyro_registers['OUT_Y_H'])		
 		OUT_Y_H=self.i2c_bus.read_byte(self.gyro_address)		
 		yValue=self.getSignedNumber(OUT_Y_H<<8 | OUT_Y_L)
 
 		#Read Z axis value
-		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_Z_L'])		
+		self.i2c_bus.write_byte(self.gyro_address,self.gyro_registers['OUT_Z_L'])		
 		OUT_Z_L=self.i2c_bus.read_byte(self.gyro_address)		
-		self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['OUT_Z_H'])		
+		self.i2c_bus.write_byte(self.gyro_address,self.gyro_registers['OUT_Z_H'])		
 		OUT_Z_H=self.i2c_bus.read_byte(self.gyro_address)		
 		zValue=self.getSignedNumber(OUT_Z_H<<8 | OUT_Z_L)
 
@@ -1360,15 +1456,139 @@ class Daisy7():
 
 		return (xValue,yValue,zValue)
 
-	####################
-	# COMPASS functions
-	####################
+	# BAROMETER functions
+	# Some parts of this code become from the Adafruit I2C libraries
+	# https://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code/blob/master/Adafruit_BMP085/Adafruit_BMP085.py
 
-	#I've extracted part of this code from Think Bowl I2C Libraries
+	def baro_getRawTemperature(self):
+		self.i2c_bus.write_byte_data(self.baro_registers['I2C_ADDR'],self.baro_registers['CONTROL'],self.baro_registers['READTEMPCMD'])	
+		time.sleep(0.005)
+		temperature=readU16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['TEMPDATA'])		
+		return temperature
+
+	def baro_getTemperature(self):
+		UT = 0
+		X1 = 0
+		X2 = 0
+		B5 = 0
+		temp = 0.0
+
+		# Read raw temp before aligning it with the calibration values
+		UT = self.baro_getRawTemperature()
+		X1 = ((UT - self.baro_registers["BUF_AC6"]) * self.baro_registers["BUF_AC5"]) >> 15
+		X2 = (self.baro_registers["BUF_MC"] << 11) / (X1 + self.baro_registers["BUF_MD"])
+		B5 = X1 + X2
+		temp = ((B5 + 8) >> 4) / 10.0
+		return temp
+		
+	def baro_getCalibrationData(self):
+		self.baro_registers["BUF_AC1"]=readS16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_AC1'])	
+		self.baro_registers["BUF_AC2"]=readS16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_AC2'])	
+		self.baro_registers["BUF_AC3"]=readS16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_AC3'])	
+		self.baro_registers["BUF_AC4"]=readU16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_AC4'])	
+		self.baro_registers["BUF_AC5"]=readU16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_AC5'])	
+		self.baro_registers["BUF_AC6"]=readU16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_AC6'])	
+		self.baro_registers["BUF_B1"]=readS16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_B1'])	
+		self.baro_registers["BUF_B2"]=readS16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_B2'])	
+		self.baro_registers["BUF_MB"]=readS16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_MB'])	
+		self.baro_registers["BUF_MC"]=readS16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_MC'])	
+		self.baro_registers["BUF_MD"]=readS16(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers['CAL_MD'])	
+		
+	def baro_showCalibrationData(self):
+		print "CAL_AC1 = %6d" % (self.baro_registers["BUF_AC1"])
+		print "CAL_AC2 = %6d" % (self.baro_registers["BUF_AC2"])
+		print "CAL_AC3 = %6d" % (self.baro_registers["BUF_AC3"])
+		print "CAL_AC4 = %6d" % (self.baro_registers["BUF_AC4"])
+		print "CAL_AC5 = %6d" % (self.baro_registers["BUF_AC5"])
+		print "CAL_AC6 = %6d" % (self.baro_registers["BUF_AC6"])
+		print " CAL_B1 = %6d" % (self.baro_registers["BUF_B1"])
+		print " CAL_B2 = %6d" % (self.baro_registers["BUF_B2"])
+		print " CAL_MB = %6d" % (self.baro_registers["BUF_MB"])
+		print " CAL_MC = %6d" % (self.baro_registers["BUF_MC"])
+		print " CAL_MD = %6d" % (self.baro_registers["BUF_MD"])
+		  
+	def baro_getRawPressure(self):
+		write8(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers["CONTROL"], self.baro_registers["READPRESSURECMD"] + (self.mode << 6))
+
+		if (self.mode == self.baro_registers["ULTRALOWPOWER"]):
+			time.sleep(0.005)
+		elif (self.mode == self.baro_registers["HIGHRES"]):
+			time.sleep(0.014)
+		elif (self.mode == self.baro_registers["ULTRAHIGHRES"]):
+			time.sleep(0.026)
+		else:
+			time.sleep(0.008)
+
+		msb =  readU8(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers["PRESSUREDATA"])
+		lsb =  readU8(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers["PRESSUREDATA"]+1)
+		xlsb = readU8(self.i2c_bus,self.baro_registers['I2C_ADDR'],self.baro_registers["PRESSUREDATA"]+2)
+		
+		raw = ((msb << 16) + (lsb << 8) + xlsb) >> (8 - self.mode)
+		return raw		  
+
+	def baro_getPressure(self):
+		"Gets the compensated pressure in pascal"
+		UT = 0
+		UP = 0
+		B3 = 0
+		B5 = 0
+		B6 = 0
+		X1 = 0
+		X2 = 0
+		X3 = 0
+		p = 0
+		B4 = 0
+		B7 = 0
+
+		UT = self.baro_getRawTemperature()
+		UP = self.baro_getRawPressure()
+
+		# True Temperature Calculations
+		X1 = ((UT - self.baro_registers["CAL_AC6"]) * self.baro_registers["CAL_AC5"]) >> 15
+		X2 = (self.baro_registers["CAL_MC"] << 11) / (X1 + self.baro_registers["CAL_MD"])
+		B5 = X1 + X2
+
+		# Pressure Calculations
+		B6 = B5 - 4000
+		X1 = (self.baro_registers["CAL_B2"] * (B6 * B6) >> 12) >> 11
+		X2 = (self.baro_registers["CAL_AC2"] * B6) >> 11
+		X3 = X1 + X2
+		B3 = (((self.baro_registers["CAL_AC1"] * 4 + X3) << self.mode) + 2) / 4
+
+		X1 = (self.baro_registers["CAL_AC3"] * B6) >> 13
+		X2 = (self.baro_registers["CAL_B1"] * ((B6 * B6) >> 12)) >> 16
+		X3 = ((X1 + X2) + 2) >> 2
+		B4 = (self.baro_registers["CAL_AC4"] * (X3 + 32768)) >> 15
+		B7 = (UP - B3) * (50000 >> self.mode)
+
+
+		if (B7 < 0x80000000):
+			p = (B7 * 2) / B4
+		else:
+			p = (B7 / B4) * 2
+      
+		X1 = (p >> 8) * (p >> 8)
+		X1 = (X1 * 3038) >> 16
+		X2 = (-7357 * p) >> 16
+
+		p = p + ((X1 + X2 + 3791) >> 4)
+
+		return p
+
+	def baro_getAltitude(self, seaLevelPressure=101325):
+		"Calculates the altitude in meters"
+		altitude = 0.0
+		pressure = float(self.baro_getPressure())
+		altitude = 44330.0 * (1.0 - pow(pressure / seaLevelPressure, 0.1903))
+		return altitude
+		  
+	# COMPASS functions
+
+	#Part of this code become from Think Bowl I2C Libraries
 	#http://think-bowl.com/raspberry-pi/installing-the-think-bowl-i2c-libraries-for-python/
 		
 	def compass_setContinuousMode(self):
-		self.setOption(self.hmc5883l_register["MODE_REG"], self.MeasurementContinuous)
+		self.setOption(self.compass_registers["MODE_REG"], self.MeasurementContinuous)
 		
 	def compass_setScale(self, gauss):
 		if gauss == 0.88:
@@ -1397,7 +1617,7 @@ class Daisy7():
 			self.scale = 4.35
 		
 		self.scale_reg = self.scale_reg << 5
-		self.setOption(self.hmc5883l_register["CONF_REG_B"], self.scale_reg)
+		self.setOption(self.compass_registers["CONF_REG_B"], self.scale_reg)
 		
 	def compass_setDeclination(self, degree, min = 0):
 		self.declinationDeg = degree
@@ -1457,23 +1677,23 @@ class Daisy7():
 		
 	def compass_getAxes(self):
 		#Read X axis value
-		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_X_L'])		
+		self.i2c_bus.write_byte(self.compass_address,self.compass_registers['OUT_X_L'])		
 		OUT_X_L=self.i2c_bus.read_byte(self.compass_address)		
-		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_X_H'])		
+		self.i2c_bus.write_byte(self.compass_address,self.compass_registers['OUT_X_H'])		
 		OUT_X_H=self.i2c_bus.read_byte(self.compass_address)		
 		xValue=self.getSignedNumber(OUT_X_H<<8 | OUT_X_L)
 
 		#Read Y axis value
-		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_Y_L'])		
+		self.i2c_bus.write_byte(self.compass_address,self.compass_registers['OUT_Y_L'])		
 		OUT_Y_L=self.i2c_bus.read_byte(self.compass_address)		
-		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_Y_H'])		
+		self.i2c_bus.write_byte(self.compass_address,self.compass_registers['OUT_Y_H'])		
 		OUT_Y_H=self.i2c_bus.read_byte(self.compass_address)		
 		yValue=self.getSignedNumber(OUT_Y_H<<8 | OUT_Y_L)
 
 		#Read Z axis value
-		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_Z_L'])		
+		self.i2c_bus.write_byte(self.compass_address,self.compass_registers['OUT_Z_L'])		
 		OUT_Z_L=self.i2c_bus.read_byte(self.compass_address)		
-		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_Z_H'])		
+		self.i2c_bus.write_byte(self.compass_address,self.compass_registers['OUT_Z_H'])		
 		OUT_Z_H=self.i2c_bus.read_byte(self.compass_address)		
 		zValue=self.getSignedNumber(OUT_Z_H<<8 | OUT_Z_L)
 		
@@ -1493,6 +1713,8 @@ class Daisy7():
 			zValue = round(zValue * self.scale, 4)
 			
 		return (xValue, yValue, zValue)
+
+## DAISY-8 #############################################################
 
 class Daisy8():
 
@@ -1578,7 +1800,7 @@ class Daisy8():
 		else:		
 			thread.exit()
 			
-
+## DAISY-10 ############################################################
 
 class Daisy10():
 
@@ -1607,6 +1829,8 @@ class Daisy10():
 			fd=self.fileno()
 			serial_rs485 = struct.pack('hhhhhhhh', 0, 0, 0, 0, 0, 0, 0, 0)
 			fcntl.ioctl(fd,0x542F,serial_rs485)
+
+## DAISY-11 ############################################################
 
 class Daisy11():
 
@@ -1656,6 +1880,7 @@ class Daisy11():
 		else:
 			return False
 
+## DAISY-14 ############################################################
 
 class Daisy14():
 
@@ -1784,6 +2009,8 @@ class Daisy14():
 		self.backled.off()
 		return
 
+## DAISY-15 ############################################################
+
 class Daisy15():
 
 	"""
@@ -1812,6 +2039,8 @@ class Daisy15():
 	def send(self,col,row,str):
 		self.serial.write("s%c%c%c%c%c%s%c" % (int(row),int(col),2,0xFF,0xFF,str,0x00))		
 		rtc = self.serial.read(1)
+
+## DAISY-18 ############################################################
 
 class Daisy18():
 
@@ -1892,7 +2121,7 @@ class Daisy18():
 		else:		
 			thread.exit()
 
-
+## DAISY-19 ############################################################
 
 class Daisy19():
 
@@ -1956,6 +2185,8 @@ class Daisy19():
 		else:
 			return False
 
+## DAISY-20 ############################################################
+
 class Daisy20():
 
 	"""
@@ -1978,6 +2209,7 @@ class Daisy20():
 		fd.close()
 		return(float(value)*self.volt_per_point)
 		
+## DAISY-22 ############################################################
 
 class Daisy22():
 
@@ -2024,6 +2256,7 @@ class Daisy22():
 			return True
 		else:
 			return False
+## DAISY-24 ############################################################
 
 class Daisy24():
 
