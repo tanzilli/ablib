@@ -25,6 +25,7 @@ import struct
 import thread
 import threading
 import select
+import math
 
 if platform.platform().find("Linux-2")!=-1:
 	legacy_id=True
@@ -1171,19 +1172,33 @@ class Daisy7():
 		'INT1_DURATION'		:	0x38,
 	}
 
+	# Compass registers
+	hmc5883l_register = {
+		'CONF_REG_A'		:	0x00,
+		'CONF_REG_B'		:	0x01,
+		'MODE_REG'			:	0x02,	
+		'OUT_X_H'			:	0x03,	
+		'OUT_X_L'			:	0x04,
+		'OUT_Z_H'			:	0x05,	
+		'OUT_Z_L'			:	0x06,
+		'OUT_Y_H'			:	0x07,	
+		'OUT_Y_L'			:	0x08,
+		'STATUS_REG'		:   0x09,
+		'ID_REG_A'			:	0x0A,
+		'ID_REG_B'			:	0x0B,
+		'ID_REG_C'			:	0x0C,
+	}
+
+	MeasurementContinuous = 0x00
+	MeasurementSingleShot = 0x01
+	MeasurementIdle = 0x03
 
 	i2c_bus=-1
 	acc_address=0x18
 	gyro_address=0x68
+	compass_address=0x1E
 	ser=-1
 	
-	#converts 16 bit two's compliment reading to signed int
-	def getSignedNumber(self,number):
-		if number & (1 << 15):
-			return number | ~65535
-		else:
-			return number & 65535
-
 	def __init__(self,bus_id=0):
 		self.ser = serial.Serial(
 			port="/dev/ttyS4", 
@@ -1206,9 +1221,51 @@ class Daisy7():
 		self.i2c_bus.write_byte_data(self.gyro_address,self.l3g4200d_register['CTRL_REG1'],0x0F)
 		#Full 2000dps to control REG4
 		self.i2c_bus.write_byte_data(self.gyro_address,self.l3g4200d_register['CTRL_REG4'],0x20)
+		
+		#Compass setup
+		self.compass_setScale(1.3)
+		
 		return
 
-	def gps_read(self):
+	def __str__(self):
+		ret_str = ""
+		(x, y, z) = self.acc_getAxes()
+		ret_str += "Accellerator: "+"\n"       
+		ret_str += "  Axis X: "+str(x)+"\n"       
+		ret_str += "  Axis Y: "+str(y)+"\n" 
+		ret_str += "  Axis Z: "+str(z)+"\n" 
+
+		(x, y, z) = self.gyro_getAxes()
+		ret_str += "Gyroscope: "+"\n"       
+		ret_str += "  Axis X: "+str(x)+"\n"       
+		ret_str += "  Axis Y: "+str(y)+"\n" 
+		ret_str += "  Axis Z: "+str(z)+"\n" 
+
+		(x, y, z) = self.compass_getAxes()
+		ret_str += "Compass: "+"\n"       
+		ret_str += "  Axis X: "+str(x)+"\n"       
+		ret_str += "  Axis Y: "+str(y)+"\n" 
+		ret_str += "  Axis Z: "+str(z)+"\n" 
+
+		(latitude,longitude) = self.gps_getCoordinates()
+		ret_str += "GPS: "+"\n"       
+		ret_str += "  Latidute: "+str(latitude)+"\n"       
+		ret_str += "  Longitude: "+str(longitude)+"\n" 
+		
+		return ret_str
+
+	#converts 16 bit two's compliment reading to signed int
+	def getSignedNumber(self,number):
+		if number & (1 << 15):
+			return number | ~65535
+		else:
+			return number & 65535
+
+	####################
+	# GPS functions
+	####################
+	
+	def gps_getCoordinates(self):
 		#Read a line from the GPS chip
 		NMEA_line = self.ser.readline()
 
@@ -1226,13 +1283,15 @@ class Daisy7():
 			M=float(values[4][3:5])+(float(values[4][6:10])/10000)
 			longitude=H+M/60
 			
-			rtc= {"latitude":latitude,"longitude":longitude}
-			return rtc
+			return (latitude,longitude)
 		else:
-			rtc= {"latitude":0,"longitude":0}
-			return rtc
+			return (-1,-1)
 
-	def acc_read(self):
+	####################
+	# ACC functions
+	####################
+
+	def acc_getAxes(self):
 		while True:
 			self.i2c_bus.write_byte(self.acc_address,self.lis331dlh_register['STATUS_REG'])		
 			status_reg=self.i2c_bus.read_byte(self.acc_address)		
@@ -1261,10 +1320,13 @@ class Daisy7():
 		yValue=self.getSignedNumber(OUT_Y_H<<8|OUT_Y_L)
 		zValue=self.getSignedNumber(OUT_Z_H<<8|OUT_Z_L)
 
-		values = {"X":xValue,"Y":yValue,"Z":zValue}	
-		return values
+		return (xValue,yValue,zValue)
 
-	def gyro_read(self):
+	####################
+	# GYRO functions
+	####################
+
+	def gyro_getAxes(self):
 		while True:
 			self.i2c_bus.write_byte(self.gyro_address,self.l3g4200d_register['STATUS_REG'])		
 			status_reg=self.i2c_bus.read_byte(self.gyro_address)		
@@ -1296,8 +1358,141 @@ class Daisy7():
 		yValue=self.getSignedNumber(OUT_Y_H<<8|OUT_Y_L)
 		zValue=self.getSignedNumber(OUT_Z_H<<8|OUT_Z_L)
 
-		values = {"X":xValue,"Y":yValue,"Z":zValue}	
-		return values
+		return (xValue,yValue,zValue)
+
+	####################
+	# COMPASS functions
+	####################
+
+	#I've extracted part of this code from Think Bowl I2C Libraries
+	#http://think-bowl.com/raspberry-pi/installing-the-think-bowl-i2c-libraries-for-python/
+		
+	def compass_setContinuousMode(self):
+		self.setOption(self.hmc5883l_register["MODE_REG"], self.MeasurementContinuous)
+		
+	def compass_setScale(self, gauss):
+		if gauss == 0.88:
+			self.scale_reg = 0x00
+			self.scale = 0.73
+		elif gauss == 1.3:
+			self.scale_reg = 0x01
+			self.scale = 0.92
+		elif gauss == 1.9:
+			self.scale_reg = 0x02
+			self.scale = 1.22
+		elif gauss == 2.5:
+			self.scale_reg = 0x03
+			self.scale = 1.52
+		elif gauss == 4.0:
+			self.scale_reg = 0x04
+			self.scale = 2.27
+		elif gauss == 4.7:
+			self.scale_reg = 0x05
+			self.scale = 2.56
+		elif gauss == 5.6:
+			self.scale_reg = 0x06
+			self.scale = 3.03
+		elif gauss == 8.1:
+			self.scale_reg = 0x07
+			self.scale = 4.35
+		
+		self.scale_reg = self.scale_reg << 5
+		self.setOption(self.hmc5883l_register["CONF_REG_B"], self.scale_reg)
+		
+	def compass_setDeclination(self, degree, min = 0):
+		self.declinationDeg = degree
+		self.declinationMin = min
+		self.declination = (degree+min/60) * (math.pi/180)
+		
+	def setOption(self, register, *function_set):
+		options = 0x00
+		for function in function_set:
+			options = options | function
+		self.i2c_bus.write_byte_data(self.compass_address,register, options)
+		
+	# Adds to existing options of register	
+	def addOption(self, register, *function_set):
+		options = self.bus.read_byte_data(self.compass_address,register)
+		for function in function_set:
+			options = options | function
+		self.i2c_bus.write_byte_data(self.compass_address,register, options)
+		
+	# Removes options of register	
+	def removeOption(self, register, *function_set):
+		options = self.i2c_bus.read_byte_data(self.compass_address,register)
+		for function in function_set:
+			options = options & (function ^ 0b11111111)
+		self.i2c_bus.write_byte_data(self.compass_address,register, options)
+		
+	def compass_getDeclination(self):
+		return (self.declinationDeg, self.declinationMin)
+	
+	def compass_getDeclinationString(self):
+		return str(self.declinationDeg)+"\u00b0 "+str(self.declinationMin)+"'"
+	
+	# Returns heading in degrees and minutes
+	def compass_getHeading(self):
+		(scaled_x, scaled_y, scaled_z) = self.compass_getAxes()
+		
+		headingRad = math.atan2(scaled_y, scaled_x)
+		headingRad += self.declination
+
+		# Correct for reversed heading
+		if(headingRad < 0):
+			headingRad += 2*math.pi
+			
+		# Check for wrap and compensate
+		if(headingRad > 2*math.pi):
+			headingRad -= 2*math.pi
+			
+		# Convert to degrees from radians
+		headingDeg = headingRad * 180/math.pi
+		degrees = math.floor(headingDeg)
+		minutes = round(((headingDeg - degrees) * 60))
+		return (degrees, minutes)
+	
+	def compass_getHeadingString(self):
+		(degrees, minutes) = self.getHeading()
+		return str(degrees)+"\u00b0 "+str(minutes)+"'"
+		
+	def compass_getAxes(self):
+		#Read X axis value
+		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_X_L'])		
+		OUT_X_L=self.i2c_bus.read_byte(self.compass_address)		
+		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_X_H'])		
+		OUT_X_H=self.i2c_bus.read_byte(self.compass_address)		
+		xValue=self.getSignedNumber(OUT_X_H<<8 | OUT_X_L)
+
+		#Read Y axis value
+		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_Y_L'])		
+		OUT_Y_L=self.i2c_bus.read_byte(self.compass_address)		
+		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_Y_H'])		
+		OUT_Y_H=self.i2c_bus.read_byte(self.compass_address)		
+		yValue=self.getSignedNumber(OUT_Y_H<<8 | OUT_Y_L)
+
+		#Read Z axis value
+		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_Z_L'])		
+		OUT_Z_L=self.i2c_bus.read_byte(self.compass_address)		
+		self.i2c_bus.write_byte(self.compass_address,self.hmc5883l_register['OUT_Z_H'])		
+		OUT_Z_H=self.i2c_bus.read_byte(self.compass_address)		
+		zValue=self.getSignedNumber(OUT_Z_H<<8 | OUT_Z_L)
+		
+		if (xValue == -4096):
+			xValue = None
+		else:
+			xValue = round(xValue * self.scale, 4)
+			
+		if (yValue == -4096):
+			yValue = None
+		else:
+			yValue = round(yValue * self.scale, 4)
+			
+		if (zValue == -4096):
+			zValue = None
+		else:
+			zValue = round(zValue * self.scale, 4)
+			
+		return (xValue, yValue, zValue)
 
 class Daisy8():
 
