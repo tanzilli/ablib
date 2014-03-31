@@ -1301,6 +1301,11 @@ class Daisy7():
 		
 		#Compass setup
 		self.compass_setScale(1.3)
+		self.compass_setContinuousMode()
+		self.compass_setDeclination(9,54)
+
+		#Read the calibration data
+		self.baro_getCalibrationData()	
 		
 		return
 
