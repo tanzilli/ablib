@@ -1329,7 +1329,7 @@ class Daisy7():
 		ret_str += "     Pressure: "+str(self.baro_getPressure())+"\n"       
 		ret_str += "     Altitude: "+str(self.baro_getAltitude())+"\n\n"       
 
-		(latitude,longitude) = self.gps_getCoordinates()
+		(latitude,longitude) = self.gps_getGoogleCoordinates()
 		ret_str += "GPS: "+"\n"       
 		ret_str += "  Latidute: "+str(latitude)+"\n"       
 		ret_str += "  Longitude: "+str(longitude)+"\n\n" 
@@ -1368,7 +1368,7 @@ class Daisy7():
 
 	# GPS functions
 	
-	def gps_getCoordinates(self):
+	def gps_getGoogleCoordinates(self):
 		#Read a line from the GPS chip
 		NMEA_line = self.ser.readline()
 
