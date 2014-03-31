@@ -1273,9 +1273,9 @@ class Daisy7():
 	ser=-1
 	mode = baro_registers["STANDARD"]
 	
-	def __init__(self,bus_id=0):
+	def __init__(self,connector_id):
 		self.ser = serial.Serial(
-			port="/dev/ttyS4", 
+			port=serial_ports[connector_id], 
 			baudrate=115200, 
 			timeout=1,
 			parity=serial.PARITY_NONE,
@@ -1284,7 +1284,7 @@ class Daisy7():
 		)  
 		self.ser.flushInput()
 
-		self.i2c_bus = smbus.SMBus(bus_id)
+		self.i2c_bus = smbus.SMBus(0)
 		
 		if self.checkChipAdresses()==False:
 			raise IOError, "I2C chip not found"
@@ -1336,19 +1336,22 @@ class Daisy7():
 		
 		return ret_str
 
+	def readNMEAmsg(self):
+		self.ser.flushInput()
+		return self.ser.readline().replace("\r\n","")
+		
+
 	def checkChipAdresses(self):
 		rtc=True
 		
 		try:
 			self.i2c_bus.write_byte(self.acc_registers['I2C_ADDR'],self.acc_registers['WHO_AM_I'])		
-			print "Accellerometer: 0x%02X" % self.i2c_bus.read_byte(self.acc_address)	
 		except IOError, err:
 			print "Accellerometer not found"	
 			rtc=False
 		
 		try:
 			self.i2c_bus.write_byte(self.gyro_registers['I2C_ADDR'],self.gyro_registers['WHO_AM_I'])		
-			print "Gyroscope:      0x%02X" % self.i2c_bus.read_byte(self.gyro_address)	
 		except IOError, err:
 			print "Gyroscope not found"	
 			rtc=False
