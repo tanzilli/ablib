@@ -3,6 +3,7 @@
 # Python functions collection to easily manage the I/O lines and 
 # Daisy modules with the following Acme Systems boards:
 # TERRA Board (http://www.acmesystems.it/terra)
+# ARIAG25-EK Board (http://www.acmesystems.it/ariag25ek)
 # FOX Board G20 (http://www.acmesystems.it/FOXG20)
 # ARIA G25 SoM (http://www.acmesystems.it/aria) 
 # ARIETTA G25 SoM (http://www.acmesystems.it/arietta)
@@ -192,7 +193,7 @@ J6_kernel_ids = {
 	'38' :  43,
 }
 
-
+#D1 (Daisy-1)
 D1_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :  70, #PB6
@@ -206,6 +207,7 @@ D1_kernel_ids = {
 	'10':   0, #GND
 }
 
+#D2 (Daisy-1)
 D2_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :  63, #PA31
@@ -219,6 +221,7 @@ D2_kernel_ids = {
 	'10':   0, #GND
 }
 
+#D3 (Daisy-1)
 D3_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :  68, #PB4
@@ -232,6 +235,7 @@ D3_kernel_ids = {
 	'10':   0, #GND
 }
 
+#D4 (Daisy-1)
 D4_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :   0, #AVDD
@@ -245,7 +249,7 @@ D4_kernel_ids = {
 	'10':   0, #GND
 }
 
-
+#D5 (Daisy-1)
 D5_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :  76, #PB12
@@ -259,6 +263,7 @@ D5_kernel_ids = {
 	'10':  0,  #GND
 }
 
+#D6 (Daisy-1)
 D6_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :  74, #PB10
@@ -272,6 +277,7 @@ D6_kernel_ids = {
 	'10':   0, #GND
 }
 
+#D7 (Daisy-1)
 D7_kernel_ids = {
 	'1' :  0,  #3V3
 	'2' :  65, #PB1
@@ -285,6 +291,7 @@ D7_kernel_ids = {
 	'10':   0, #GND
 }
 
+#D8 (Daisy-1)
 D8_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :  72, #PB8
@@ -298,7 +305,7 @@ D8_kernel_ids = {
 	'10':   0, #GND
 }
 
-#Terra D10
+#D10 (Terra, ariag25-ek)
 D10_kernel_ids = {
 	'1' :   0, #3V3
 	'2' : 118, #PC22
@@ -312,7 +319,7 @@ D10_kernel_ids = {
 	'10':   0, #GND
 }
 
-#Terra D11
+#D11 (Terra, ariag25-ek)
 D11_kernel_ids = {
 	'1' :   0,  #3V3
 	'2' : 112, #PC16
@@ -326,7 +333,7 @@ D11_kernel_ids = {
 	'10':   0, #GND
 }
 
-#Terra D12
+#D12 (Terra, ariag25-ek)
 D12_kernel_ids = {
 	'1' :   0, #3V3
 	'2' : 104, #PC8
@@ -340,7 +347,7 @@ D12_kernel_ids = {
 	'10':   0, #GND
 }
 
-#Terra D13
+#D13 (Terra, ariag25-ek)
 D13_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :  37, #PA5
@@ -354,7 +361,7 @@ D13_kernel_ids = {
 	'10':   0, #GND
 }
 
-#Terra D14
+#D14 (Terra, ariag25-ek)
 D14_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :   0, #3V3
@@ -368,7 +375,7 @@ D14_kernel_ids = {
 	'10':   0, #GND
 }
 
-#Terra D15
+#D15 (Terra, ariag25-ek)
 D15_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :  44, #PA12
@@ -382,7 +389,7 @@ D15_kernel_ids = {
 	'10':   0, #GND
 }
 
-#Terra D16
+#D16 (Terra, ariag25-ek)
 D16_kernel_ids = {
 	'1' :   0, #3V3
 	'2' :  61, #PA29
@@ -391,10 +398,24 @@ D16_kernel_ids = {
 	'5' :  57, #PA25
 	'6' :  58, #PA26
 	'7' :  62, #PA30
-	'8' :  63, #PA31.
+	'8' :  63, #PA31
 	'9' :  60, #PA28
 	'10':   0, #GND
 }	
+
+#D17 (Terra, ariag25-ek)
+D17_kernel_ids = {
+	'1' :   0, #3V3
+	'2' :  32, #PA0
+	'3' :  33, #PA1
+	'4' :  34, #PA2
+	'5' :  35, #PA3
+	'6' :  36, #PA4
+	'7' :  96, #PC0
+	'8' :  97, #PC1
+	'9' :   0, #5V0
+	'10':   0, #GND
+}
 
 
 # Kernel IDs descriptors for each connector
