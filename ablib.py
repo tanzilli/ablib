@@ -43,544 +43,12 @@ serial_ports = {
 	'D10':  '/dev/ttyS4',
 	'D13':  '/dev/ttyS2',
 	'D17':  '/dev/ttyS1'
-
 }
 
-# Connectors pin assignments
-# 'pin name', 'kernel id'  # pin description
-
-aria_north = {
-	'2'  :  96,
-	'3'  :  97,
-	'4'  :  98,
-	'5'  :  99,
-	'6'  : 100,
-	'7'  : 101,
-	'8'  : 102,
-	'9' :  103,
-	'10' : 104,
-	'11' : 105,
-	'12' : 106,
-	'13' : 107,
-	'14' : 108,
-	'15' : 109,
-	'16' : 110,
-	'17' : 111,
-	'18' : 112,
-	'19' : 113,
-	'20' : 114,
-	'21' : 115,
-	'22' : 116,
-	'23' : 117,
-}
-
-aria_east = {
-	'2'  : 118,
-	'3'  : 119,
-	'4'  : 120,
-	'5'  : 121,
-	'6'  : 122,
-	'7'  : 123,
-	'8'  : 124,
-	'9' :  125,
-	'10' : 126,
-	'11' : 127,
-}
-
-aria_south = {
-	'2'  :  53,
-	'3'  :  52,
-	'4'  :  51,
-	'5'  :  50,
-	'6'  :  49,
-	'7'  :  48,
-	'8'  :  47,
-	'9' :   46,
-	'10' :  45,
-	'11' :  44,
-	'12' :  43,
-	'13' :  42,
-	'14' :  41,
-	'15' :  40,
-	'16' :  39,
-	'17' :  38,
-	'18' :  37,
-	'19' :  36,
-	'20' :  35,
-	'21' :  34,
-	'22' :  33,
-	'23' :  32,
-}
-
-aria_west = {
-	'9' :   54,
-	'10' :  55,
-	'11' :  56,
-	'12' :  57,
-	'13' :  58,
-	'14' :  59,
-	'15' :  60,
-	'16' :  61,
-	'17' :  62,
-	'18' :  63,
-	'20' :  75,
-	'21' :  76,
-	'22' :  77,
-	'23' :  78,
-}
-
-#Acqua
-
-J1_kernel_ids = {
-	 '9'  :   1+32,
-	'10'  :   0+32,
-	'11'  :   3+32,
-	'12'  :   2+32,
-	'13'  :   5+32,
-	'14'  :   4+32,
-	'15'  :   7+32,
-	'16'  :   6+32,
-	'17'  :   9+32,
-	'18'  :   8+32,
-	'19'  :  11+32,
-	'20'  :  10+32,
-	'21'  :  13+32,
-	'22'  :  12+32,
-	'23'  :  15+32,
-	'24'  :  14+32,
-	'25'  :  77+32,
-	'26'  :  78+32,
-	'27'  :  75+32,
-	'28'  :  76+32,
-	'29'  :  79+32,
-	'30'  :  74+32,
-	'31'  : 156+32,
-	'32'  : 155+32,
-	'33'  :  25+32,
-	'35'  :  27+32,
-	'36'  :  28+32,
-	'37'  :  29+32,
-	'38'  :  26+32,
-	'39'  :  24+32,
-	'40'  : 116+32,
-	'41'  : 117+32,
-	'42'  : 118+32,
-	'43'  : 119+32,
-	'44'  : 120+32,
-	'45'  : 121+32,
-	'46'  : 122+32,
-	'47'  : 123+32,
-	'48'  : 124+32,
-	'49'  : 125+32,
-}
-
-J2_kernel_ids = {
-	 '1'  : 127+32,
-	 '2'  : 126+32,
-	 '3'  : 115+32,
-	 '5'  : 109+32,
-	 '6'  : 108+32,
-	 '7'  : 107+32,
-	 '8'  : 106+32,
-	 '9'  : 111+32,
-	'10'  : 110+32,
-	'11'  : 113+32,
-	'12'  : 112+32,
-	'13'  :  34+32,
-	'14'  : 114+32,
-	'15'  :  38+32,
-	'16'  :  35+32,
-	'17'  :  39+32,
-	'18'  :  43+32,
-	'19'  :  42+32,
-	'23'  :  36+32,
-	'25'  :  37+32,
-	'29'  :  32+32,
-	'31'  :  33+32,
-	'32'  :  46+32,
-	'33'  :  40+32,
-	'34'  :  47+32,
-	'35'  :  41+32,
-	'36'  :  48+32,
-	'37'  :  44+32,
-	'38'  :  49+32,
-	'39'  :  45+32,
-	'40'  :  50+32,
-	'42'  :  59+32,
-	'43'  :  58+32,
-	'44'  :  57+32,
-	'45'  :  60+32,
-	'46'  :  61+32,
-}
-
-J3_kernel_ids = {
-	 '5'  : 145+32,
-	 '6'  : 144+32,
-	 '7'  : 147+32,
-	 '8'  : 146+32,
-	 '9'  : 145+32,
-	'10'  : 151+32,
-	'11'  : 152+32,
-	'12'  : 153+32,
-	'13'  : 155+32,
-	'14'  : 148+32,
-	'15'  :  54+32,
-	'16'  :  55+32,
-	'17'  :  51+32,
-	'18'  :  53+32,
-	'19'  :  56+32,
-	'20'  :  52+32,
-	'22'  :  87+32,
-	'23'  :  89+32,
-	'24'  :  86+32,
-	'25'  :  88+32,
-	'26'  :  90+32,
-	'28'  :  91+32,
-	'29'  :  92+32,
-	'30'  :  94+32,
-	'31'  :  93+32,
-	'32'  :  95+32,
-	'33'  :  17+32,
-	'34'  :  16+32,
-	'35'  :  19+32,
-	'36'  :  18+32,
-	'37'  :  21+32,
-	'38'  :  20+32,
-	'39'  :  23+32,
-	'40'  :  22+32,
-	'41'  :  31+32,
-	'42'  :  30+32,
-	'43'  : 159+32,
-	'44'  : 157+32,
-	'45'  :  80+32,
-	'46'  :  81+32,
-	'47'  :  82+32,
-	'48'  :  83+32,
-	'49'  :  84+32,
-	'50'  :  85+32,
-}
-
-#Fox pinout
-
-J7_kernel_ids = {
-	'3'  :  82,
-	'4'  :  83,
-	'5'  :  80,
-	'6'  :  81,
-	'7'  :  66,
-	'8'  :  67,
-	'9'  :  64,
-	'10' :  65,
-	'11' : 110,
-	'12' : 111,
-	'13' : 108,
-	'14' : 109,
-	'15' : 105,
-	'16' : 106,
-	'17' : 103,
-	'18' : 104,
-	'19' : 101,
-	'20' : 102,
-	'21' :  73,
-	'22' :  72,
-	'31' :  87,
-	'32' :  86,
-	'33' :  89,
-	'34' :  88,
-	'35' :  60,
-	'36' :  59,
-	'37' :  58,
-	'38' :  57,
-}
-
-J6_kernel_ids = {
-	'3'  :  92,
-	'4'  :  71,
-	'5'  :  70,
-	'6'  :  93,
-	'7'  :  90,
-	'8'  :  69,
-	'9'  :  68,
-	'10' :  91,
-	'13' :  75,
-	'14' :  74,
-	'15' :  77,
-	'16' :  76,
-	'17' :  85,
-	'18' :  84,
-	'19' :  95,
-	'20' :  94,
-	'21' :  63,
-	'22' :  62,
-	'24' :  38,
-	'25' :  39,
-	'26' :  41,
-	'27' :  99,
-	'28' :  98,
-	'29' :  97,
-	'30' :  96,
-	'31' :  56,
-	'32' :  55,
-	'36' :  42,
-	'37' :  54,
-	'38' :  43,
-}
-
-#D1 (Daisy-1)
-D1_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  70, #PB6
-	'3' :  71, #PB7
-	'4' :  92, #PB28
-	'5' :  93, #PB29
-	'6' :   0, #N.C.
-	'7' :  55, #PA23
-	'8' :  56, #PA24
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-#D2 (Daisy-1)
-D2_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  63, #PA31
-	'3' :  62, #PA30
-	'4' :  61, #PA29
-	'5' :  60, #PA28
-	'6' :  59, #PA27
-	'7' :  58, #PA26
-	'8' :  57, #PA25
-	'9' :  94, #PB30
-	'10':   0, #GND
-}
-
-#D3 (Daisy-1)
-D3_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  68, #PB4
-	'3' :  69, #PB5
-	'4' :  90, #PB26
-	'5' :  91, #PB27
-	'6' :  86, #PB22
-	'7' :  88, #PB24
-	'8' :  89, #PB25
-	'9' :  87, #PB23
-	'10':   0, #GND
-}
-
-#D4 (Daisy-1)
-D4_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :   0, #AVDD
-	'3' :   0, #VREF
-	'4' :   0, #AGND
-	'5' :  96, #PC0
-	'6' :  97, #PC1
-	'7' :  98, #PC2
-	'8' :  99, #PC3
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-#D5 (Daisy-1)
-D5_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  76, #PB12
-	'3' :  77, #PB13
-	'4' :  80, #PB16
-	'5' :  81, #PB17
-	'6' :  82, #PB18
-	'7' :  83, #PB19
-	'8' :  84, #PB20
-	'9' :  85, #PB21
-	'10':  0,  #GND
-}
-
-#D6 (Daisy-1)
-D6_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  74, #PB10
-	'3' :  75, #PB11
-	'4' : 104, #PC8
-	'5' : 106, #PC10
-	'6' :  95, #PB31
-	'7' :  55, #PA23
-	'8' :  56, #PA24
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-#D7 (Daisy-1)
-D7_kernel_ids = {
-	'1' :  0,  #3V3
-	'2' :  65, #PB1
-	'3' :  64, #PB0
-	'4' :  66, #PB2
-	'5' :  67, #PB3
-	'6' : 101, #PC5
-	'7' : 100, #PC4
-	'8' :  99, #PC3
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-#D8 (Daisy-1)
-D8_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  72, #PB8
-	'3' :  73, #PB9
-	'4' :   0, #N.C.
-	'5' :   0, #N.C.
-	'6' :   0, #N.C.
-	'7' :  55, #PA23
-	'8' :  56, #PA24
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-#D10 (Terra, ariag25-ek)
-D10_kernel_ids = {
-	'1' :   0, #3V3
-	'2' : 118, #PC22
-	'3' : 119, #PC23
-	'4' : 120, #PC24
-	'5' : 121, #PC25
-	'6' : 122, #PC26
-	'7' :  62, #PA30
-	'8' :  63, #PA31
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-#D11 (Terra, ariag25-ek)
-D11_kernel_ids = {
-	'1' :   0,  #3V3
-	'2' : 112, #PC16
-	'3' : 113, #PC17
-	'4' : 114, #PC18
-	'5' : 115, #PC19
-	'6' : 116, #PC20
-	'7' : 117, #PC21
-	'8' :  98, #PC2
-	'9' :  99, #PC3
-	'10':   0, #GND
-}
-
-#D12 (Terra, ariag25-ek)
-D12_kernel_ids = {
-	'1' :   0, #3V3
-	'2' : 104, #PC8
-	'3' : 105, #PC9
-	'4' : 106, #PC10
-	'5' : 107, #PC11
-	'6' : 108, #PC12
-	'7' : 109, #PC13
-	'8' : 110, #PC14
-	'9' : 111, #PC15
-	'10':   0, #GND
-}
-
-#D13 (Terra, ariag25-ek)
-D13_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  37, #PA5
-	'3' :  38, #PA6
-	'4' : 123, #PC27
-	'5' : 124, #PC28
-	'6' : 125, #PC29
-	'7' :  96, #PC0
-	'8' :  97, #PC1
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-#D14 (Terra, ariag25-ek)
-D14_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :   0, #3V3
-	'3' :   0, #VREF
-	'4' :   0, #GND
-	'5' :  75, #PB11
-	'6' :  76, #PB12
-	'7' :  77, #PB13
-	'8' :  78, #PB14
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-#D15 (Terra, ariag25-ek)
-D15_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  44, #PA12
-	'3' :  43, #PA11
-	'4' :  45, #PA13
-	'5' :  46, #PA14
-	'6' :  39, #PA7
-	'7' :  33, #PA1
-	'8' :   0, #N.C.
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-#D16 (Terra, ariag25-ek)
-D16_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  61, #PA29
-	'3' :  59, #PA27
-	'4' :  56, #PA24
-	'5' :  57, #PA25
-	'6' :  58, #PA26
-	'7' :  62, #PA30
-	'8' :  63, #PA31
-	'9' :  60, #PA28
-	'10':   0, #GND
-}	
-
-#D17 (Terra, ariag25-ek)
-D17_kernel_ids = {
-	'1' :   0, #3V3
-	'2' :  32, #PA0
-	'3' :  33, #PA1
-	'4' :  34, #PA2
-	'5' :  35, #PA3
-	'6' :  36, #PA4
-	'7' :  96, #PC0
-	'8' :  97, #PC1
-	'9' :   0, #5V0
-	'10':   0, #GND
-}
-
-
-# Kernel IDs descriptors for each connector
-connectors = {
-	'N'   :  aria_north,	#Aria
-	'E'   :  aria_east,		#Aria
-	'S'   :  aria_south,	#Aria	
-	'W'   :  aria_west,		#Aria
-	'J6'  :  J6_kernel_ids, #Fox
-	'J7'  :  J7_kernel_ids, #Fox
-	'D1'  :  D1_kernel_ids,
-	'D2'  :  D2_kernel_ids,
-	'D3'  :  D3_kernel_ids,
-	'D4'  :  D4_kernel_ids,
-	'D5'  :  D5_kernel_ids,
-	'D6'  :  D6_kernel_ids,
-	'D7'  :  D7_kernel_ids,
-	'D8'  :  D8_kernel_ids,
-	'D10' :  D10_kernel_ids,
-	'D11' :  D11_kernel_ids,
-	'D12' :  D12_kernel_ids,
-	'D13' :  D13_kernel_ids,
-	'D14' :  D14_kernel_ids,
-	'D15' :  D15_kernel_ids,
-	'D16' :  D16_kernel_ids,
-	'J1'  :  J1_kernel_ids,  #Acqua 
-	'J2'  :  J2_kernel_ids,  #Acqua 
-	'J3'  :  J3_kernel_ids,  #Acqua 
-}
-
-#New pin assigment table
+#Pin to Kernel ID table
 pin2kid = {
+
+#Aria G25
 	'N2'  :  96,
 	'N3'  :  97,
 	'N4'  :  98,
@@ -649,6 +117,9 @@ pin2kid = {
 	'W21' :  76,
 	'W22' :  77,
 	'W23' :  78,
+
+#FOX Board G20
+
 	'J7.3'  :  82,
 	'J7.4'  :  83,
 	'J7.5'  :  80,
@@ -707,6 +178,9 @@ pin2kid = {
 	'J6.36' :  42,
 	'J6.37' :  54,
 	'J6.38' :  43,
+	
+#Daisy modules	
+	
 	'D1.1' :   0, #3V3
 	'D1.2' :  70, #PB6
 	'D1.3' :  71, #PB7
@@ -857,6 +331,141 @@ pin2kid = {
 	'D16.8' :  63, #PA31.
 	'D16.9' :  60, #PA28
 	'D16.10':   0, #GND
+	'D17.1' :   0, #3V3
+	'D17.2' :  32, #PA0
+	'D17.3' :  33, #PA1
+	'D17.4' :  34, #PA2
+	'D17.5' :  35, #PA3
+	'D17.6' :  36, #PA4
+	'D17.7' :  96, #PC0
+	'D17.8' :  97, #PC1
+	'D17.9' :   0, #5V0
+	'D10.10':   0, #GND
+
+#Acqua A5
+
+	'J1.9'  :   1+32,
+	'J1.10'  :   0+32,
+	'J1.11'  :   3+32,
+	'J1.12'  :   2+32,
+	'J1.13'  :   5+32,
+	'J1.14'  :   4+32,
+	'J1.15'  :   7+32,
+	'J1.16'  :   6+32,
+	'J1.17'  :   9+32,
+	'J1.18'  :   8+32,
+	'J1.19'  :  11+32,
+	'J1.20'  :  10+32,
+	'J1.21'  :  13+32,
+	'J1.22'  :  12+32,
+	'J1.23'  :  15+32,
+	'J1.24'  :  14+32,
+	'J1.25'  :  77+32,
+	'J1.26'  :  78+32,
+	'J1.27'  :  75+32,
+	'J1.28'  :  76+32,
+	'J1.29'  :  79+32,
+	'J1.30'  :  74+32,
+	'J1.31'  : 156+32,
+	'J1.32'  : 155+32,
+	'J1.33'  :  25+32,
+	'J1.35'  :  27+32,
+	'J1.36'  :  28+32,
+	'J1.37'  :  29+32,
+	'J1.38'  :  26+32,
+	'J1.39'  :  24+32,
+	'J1.40'  : 116+32,
+	'J1.41'  : 117+32,
+	'J1.42'  : 118+32,
+	'J1.43'  : 119+32,
+	'J1.44'  : 120+32,
+	'J1.45'  : 121+32,
+	'J1.46'  : 122+32,
+	'J1.47'  : 123+32,
+	'J1.48'  : 124+32,
+	'J1.49'  : 125+32,
+	
+	 'J2.1'  : 127+32,
+	 'J2.2'  : 126+32,
+	 'J2.3'  : 115+32,
+	 'J2.5'  : 109+32,
+	 'J2.6'  : 108+32,
+	 'J2.7'  : 107+32,
+	 'J2.8'  : 106+32,
+	 'J2.9'  : 111+32,
+	'J2.10'  : 110+32,
+	'J2.11'  : 113+32,
+	'J2.12'  : 112+32,
+	'J2.13'  :  34+32,
+	'J2.14'  : 114+32,
+	'J2.15'  :  38+32,
+	'J2.16'  :  35+32,
+	'J2.17'  :  39+32,
+	'J2.18'  :  43+32,
+	'J2.19'  :  42+32,
+	'J2.23'  :  36+32,
+	'J2.25'  :  37+32,
+	'J2.29'  :  32+32,
+	'J2.31'  :  33+32,
+	'J2.32'  :  46+32,
+	'J2.33'  :  40+32,
+	'J2.34'  :  47+32,
+	'J2.35'  :  41+32,
+	'J2.36'  :  48+32,
+	'J2.37'  :  44+32,
+	'J2.38'  :  49+32,
+	'J2.39'  :  45+32,
+	'J2.40'  :  50+32,
+	'J2.42'  :  59+32,
+	'J2.43'  :  58+32,
+	'J2.44'  :  57+32,
+	'J2.45'  :  60+32,
+	'J2.46'  :  61+32,
+
+	 'J3.5'  : 145+32,
+	 'J3.6'  : 144+32,
+	 'J3.7'  : 147+32,
+	 'J3.8'  : 146+32,
+	 'J3.9'  : 145+32,
+	'J3.10'  : 151+32,
+	'J3.11'  : 152+32,
+	'J3.12'  : 153+32,
+	'J3.13'  : 155+32,
+	'J3.14'  : 148+32,
+	'J3.15'  :  54+32,
+	'J3.16'  :  55+32,
+	'J3.17'  :  51+32,
+	'J3.18'  :  53+32,
+	'J3.19'  :  56+32,
+	'J3.20'  :  52+32,
+	'J3.22'  :  87+32,
+	'J3.23'  :  89+32,
+	'J3.24'  :  86+32,
+	'J3.25'  :  88+32,
+	'J3.26'  :  90+32,
+	'J3.28'  :  91+32,
+	'J3.29'  :  92+32,
+	'J3.30'  :  94+32,
+	'J3.31'  :  93+32,
+	'J3.32'  :  95+32,
+	'J3.33'  :  17+32,
+	'J3.34'  :  16+32,
+	'J3.35'  :  19+32,
+	'J3.36'  :  18+32,
+	'J3.37'  :  21+32,
+	'J3.38'  :  20+32,
+	'J3.39'  :  23+32,
+	'J3.40'  :  22+32,
+	'J3.41'  :  31+32,
+	'J3.42'  :  30+32,
+	'J3.43'  : 159+32,
+	'J3.44'  : 157+32,
+	'J3.45'  :  80+32,
+	'J3.46'  :  81+32,
+	'J3.47'  :  82+32,
+	'J3.48'  :  83+32,
+	'J3.49'  :  84+32,
+	'J3.50'  :  85+32,
 }
 
 pinmode = {
@@ -890,7 +499,8 @@ def get_gpio_path(kernel_id):
 	return iopath		
 
 def get_kernel_id(connector_name,pin_number):
-	return connectors[connector_name][pin_number]
+	return pinname2kernelid(connector_name + "." +pin_number)
+
 
 def export(kernel_id):
 	global legacy_id
@@ -1090,90 +700,6 @@ class Pin():
 			return
 		else:		
 			thread.exit()
-			
-## DAISY-2 #############################################################
-
-class Daisy2():
-
-	"""
-	DAISY-2 Stepper motor controller
-	http://www.acmesystems.it/DAISY-2
-	"""
-
-	ENABLE_kernel_id=-1
-	DIR_kernel_id=-1
-	STEP_kernel_id=-1
-	LOWPOWER_kernel_id=-1
-
-	control_line_A = {
-		'ENABLE'   :  '2',
-		'DIR'      :  '4',
-		'STEP'     :  '6',
-		'LOWPOWER' :  '8',
-	}
-
-	control_line_B = {
-		'ENABLE'   :  '3',
-		'DIR'      :  '5',
-		'STEP'     :  '7',
-		'LOWPOWER' :  '9',
-	}
-
-	def __init__(self,connector_id,S1="A",period=1400,pulse=700):
-		if (S1=="A"):
-			self.ENABLE_kernel_id = get_kernel_id(connector_id,self.control_line_A["ENABLE"])
-			self.DIR_kernel_id = get_kernel_id(connector_id,self.control_line_A["DIR"])
-			self.STEP_kernel_id = get_kernel_id(connector_id,self.control_line_A["STEP"])
-			self.LOWPOWER_kernel_id = get_kernel_id(connector_id,self.control_line_A["LOWPOWER"])
-		
-		if (S1=="B"):
-			self.ENABLE_kernel_id = get_kernel_id(connector_id,self.control_line_B["ENABLE"])
-			self.DIR_kernel_id = get_kernel_id(connector_id,self.control_line_B["DIR"])
-			self.STEP_kernel_id = get_kernel_id(connector_id,self.control_line_B["STEP"])
-			self.LOWPOWER_kernel_id = get_kernel_id(connector_id,self.control_line_B["LOWPOWER"])
-
-		export(self.ENABLE_kernel_id)
-		export(self.DIR_kernel_id)
-		unexport(self.STEP_kernel_id)
-		soft_pwm_export(self.STEP_kernel_id)
-		export(self.LOWPOWER_kernel_id)
-
-		direction(self.ENABLE_kernel_id,'high')
-		direction(self.DIR_kernel_id,'low')
-		direction(self.LOWPOWER_kernel_id,'low')
-
-		self.steps(0)
-		self.period(period)
-		self.pulse(pulse)
-
-	def direction(self,value):
-		set_value(self.DIR_kernel_id,value)
-		
-	def enable(self):
-		set_value(self.ENABLE_kernel_id,0)
-
-	def disable(self):
-		set_value(self.ENABLE_kernel_id,1)
-
-	def lowpower(self):
-		time.sleep(0.1)
-		set_value(self.LOWPOWER_kernel_id,1)
-
-	def hipower(self):
-		set_value(self.LOWPOWER_kernel_id,0)
-		time.sleep(0.1)
-
-	def period(self,value):
-		soft_pwm_period(self.STEP_kernel_id,value)
-
-	def pulse(self,value):
-		soft_pwm_pulse(self.STEP_kernel_id,value)
-
-	def steps(self,value):
-		soft_pwm_steps(self.STEP_kernel_id,value)
-
-	def stop(self):
-		soft_pwm_steps(self.STEP_kernel_id,0)
 
 ## DAISY-4 #############################################################
 
@@ -1198,7 +724,7 @@ class Daisy4():
 
 	def __init__(self,connector_id,dip_id):
 		pin=self.dips[dip_id]
-		self.kernel_id = get_kernel_id(connector_id,pin)
+		self.kernel_id = pinname2kernelid(connector_id + "." + pin)
 
 		if (self.kernel_id!=0):
 			export(self.kernel_id)
@@ -1242,7 +768,7 @@ class Daisy5():
 
 	def __init__(self,connector_id,button_id):
 		pin=self.buttons[button_id]
-		self.kernel_id = get_kernel_id(connector_id,pin)
+		self.kernel_id = pinname2kernelid(connector_id + "." + pin)
 
 		if (self.kernel_id!=None):
 			export(self.kernel_id)
@@ -1911,7 +1437,7 @@ class Daisy8():
 		else:
 			pin=self.line_second[id]
 			
-		self.kernel_id = get_kernel_id(connector,pin)
+		self.kernel_id = pinname2kernelid(connector + "." + pin)
 
 		if (self.kernel_id!=0 and id[0:2]=="RL"):
 			export(self.kernel_id)
@@ -2019,7 +1545,7 @@ class Daisy11():
 
 	def __init__(self,connector_id,led_id):
 		pin=self.leds[led_id]
-		self.kernel_id = get_kernel_id(connector_id,pin)
+		self.kernel_id = pinname2kernelid(connector_id + "." + pin)
 
 		if (self.kernel_id!=0):
 			export(self.kernel_id)
@@ -2246,7 +1772,7 @@ class Daisy18():
 		else:
 			pin=self.line_second[id]
 			
-		self.kernel_id = get_kernel_id(connector,pin)
+		self.kernel_id = pinname2kernelid(connector + "." + pin)
 
 		export(self.kernel_id)
 		direction(self.kernel_id,'in')
@@ -2325,7 +1851,7 @@ class Daisy19():
 		else:
 			pin=self.outputs_second[output_id]
 			
-		self.kernel_id = get_kernel_id(connector_id,pin)
+		self.kernel_id = pinname2kernelid(connector_id + "." + pin)
 
 		if (self.kernel_id!=0):
 			export(self.kernel_id)
