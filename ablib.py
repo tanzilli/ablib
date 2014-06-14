@@ -2,12 +2,12 @@
 #
 # Python functions collection to easily manage the I/O lines and 
 # Daisy modules with the following Acme Systems boards:
-# TERRA Board (http://www.acmesystems.it/terra)
-# ARIAG25-EK Board (http://www.acmesystems.it/ariag25ek)
-# FOX Board G20 (http://www.acmesystems.it/FOXG20)
-# ARIA G25 SoM (http://www.acmesystems.it/aria) 
 # ARIETTA G25 SoM (http://www.acmesystems.it/arietta)
+# ARIAG25-EK Board (http://www.acmesystems.it/ariag25ek)
+# TERRA Board (http://www.acmesystems.it/terra)
+# ARIA G25 SoM (http://www.acmesystems.it/aria) 
 # ACQUA A5 SoM (http://www.acmesystems.it/acqua)
+# FOX Board G20 (http://www.acmesystems.it/FOXG20)
 #
 # (C) 2014 Sergio Tanzilli <tanzilli@acmesystems.it>
 #
@@ -47,6 +47,38 @@ serial_ports = {
 
 #Pin to Kernel ID table
 pin2kid = {
+
+
+#Arietta G25
+	'J1.7'   :  55, #PA23
+	'J1.8'   :  54, #PA22
+	'J1.10'  :  53, #PA21
+	'J1.11'  :  56, #PA24
+	'J1.12'  :  63, #PA31
+	'J1.13'  :  57, #PA25
+	'J1.14'  :  62, #PA30
+	'J1.15'  :  58, #PA26
+	'J1.17'  :  59, #PA27
+	'J1.19'  :  60, #PA28
+	'J1.21'  :  61, #PA29
+	'J1.23'  :  32, #PA0
+	'J1.24'  :  33, #PA1
+	'J1.25'  :  40, #PA8
+	'J1.26'  :  39, #PA7
+	'J1.27'  :  38, #PA6
+	'J1.28'  :  37, #PA5
+	'J1.29'  : 124, #PC28
+	'J1.30'  : 123, #PC27
+	'J1.31'  : 100, #PC4
+	'J1.32'  : 127, #PC31
+	'J1.33'  :  99, #PC3
+	'J1.34'  :  75, #PB11
+	'J1.35'  :  98, #PC2
+	'J1.36'  :  76, #PB12
+	'J1.37'  :  97, #PC1
+	'J1.38'  :  77, #PB13
+	'J1.39'  :  96, #PC0
+	'J1.40'  :  78, #PB14
 
 #Aria G25
 	'N2'  :  96,
