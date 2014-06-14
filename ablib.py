@@ -692,9 +692,6 @@ class Pin():
 		if os.path.exists(iopath): 
 			self.fd = open(iopath + '/value','r')
 
-	def digitalWrite(self,level):
-		set_value(self.kernel_id,pinlevel[level])
-
 	def high(self):
 		set_value(self.kernel_id,1)
 		
@@ -707,8 +704,14 @@ class Pin():
 	def off(self):
 		set_value(self.kernel_id,0)
 
+	def digitalWrite(self,level):
+		set_value(self.kernel_id,pinlevel[level])
+
 	def set_value(self,value):
 		return set_value(self.kernel_id,value)
+
+	def digitalRead(self):
+		return get_value(self.kernel_id)
 
 	def get_value(self):
 		return get_value(self.kernel_id)
