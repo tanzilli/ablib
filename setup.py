@@ -1,6 +1,6 @@
 from distutils.core import setup
 setup(name='ablib',
-	version='1.0',
+	version='1.01',
 	description='Python module to manage the Acme Board devices',
 	author='Sergio Tanzilli',
 	author_email='tanzilli@acmesystems.it',
