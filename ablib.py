@@ -16,6 +16,8 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 
+__version__ = 'v1.0.0'
+
 import os.path
 import platform
 import smbus
@@ -497,20 +499,310 @@ pin2kid = {
 	'J3.47'  :  82+32, #PC18
 	'J3.48'  :  83+32, #PC19
 	'J3.49'  :  84+32, #PC20
-	'J3.50'  :  85+32, #PC21
+	'J3.50'  :  85+32 #PC21
 }
 
 pinmode = {
 	"OUTPUT" : "low",
 	"LOW" : "low",
 	"HIGH" : "high",
-	"INPUT" : "in",
+	"INPUT" : "in"
 }
 
 pinlevel = {
 	"HIGH" : 1,
-	"LOW"  : 0,
+	"LOW"  : 0
 }
+
+mcuName2pinname = {
+#Arietta G25
+    'Arietta_G25' : {
+        'PA23' :  'J4.7',
+        'PA22' :  'J4.8',
+        'PA21' : 'J4.10',
+        'PA24' : 'J4.11',
+        'PA31' : 'J4.12',
+        'PA25' : 'J4.13',
+        'PA30' : 'J4.14',
+        'PA26' : 'J4.15',
+        'PA27' : 'J4.17',
+        'PA28' : 'J4.19',
+        'PA29' : 'J4.21',
+         'PA0' : 'J4.23',
+         'PA1' : 'J4.24',
+         'PA8' : 'J4.25',
+         'PA7' : 'J4.26',
+         'PA6' : 'J4.27',
+         'PA5' : 'J4.28',
+        'PC28' : 'J4.29',
+        'PC27' : 'J4.30',
+         'PC4' : 'J4.31',
+        'PC31' : 'J4.32',
+         'PC3' : 'J4.33',
+        'PB11' : 'J4.34',
+         'PC2' : 'J4.35',
+        'PB12' : 'J4.36',
+         'PC1' : 'J4.37',
+        'PB13' : 'J4.38',
+         'PC0' : 'J4.39',
+        'PB14' : 'J4.40'
+        },
+
+#Daisy modules
+    'Daisy' : {
+         'PB6' :  'D1.2',
+         'PB7' :  'D1.3',
+        'PB28' :  'D1.4',
+        'PB29' :  'D1.5',
+        'PA23' :  'D1.7',
+        'PA24' :  'D1.8',
+
+        'PA31' :  'D2.2',
+        'PA30' :  'D2.3',
+        'PA29' :  'D2.4',
+        'PA28' :  'D2.5',
+        'PA27' :  'D2.6',
+        'PA26' :  'D2.7',
+        'PA25' :  'D2.8',
+        'PB30' :  'D2.9',
+
+         'PB4' :  'D3.2',
+         'PB5' :  'D3.3',
+        'PB26' :  'D3.4',
+        'PB27' :  'D3.5',
+        'PB22' :  'D3.6',
+        'PB24' :  'D3.7',
+        'PB25' :  'D3.8',
+        'PB23' :  'D3.9',
+
+         'PC0' :  'D4.5',
+         'PC1' :  'D4.6',
+         'PC2' :  'D4.7',
+         'PC3' :  'D4.8',
+
+        'PB12' :  'D5.2',
+        'PB13' :  'D5.3',
+        'PB16' :  'D5.4',
+        'PB17' :  'D5.5',
+        'PB18' :  'D5.6',
+        'PB19' :  'D5.7',
+        'PB20' :  'D5.8',
+        'PB21' :  'D5.9',
+
+        'PB10' :  'D6.2',
+        'PB11' :  'D6.3',
+         'PC8' :  'D6.4',
+        'PC10' :  'D6.5',
+        'PB31' :  'D6.6',
+        'PA23' :  'D6.7',
+         'PA24' :  'D6.8',
+
+         'PB1' :  'D7.2',
+         'PB0' :  'D7.3',
+         'PB2' :  'D7.4',
+         'PB3' :  'D7.5',
+         'PC5' :  'D7.6',
+         'PC4' :  'D7.7',
+         'PC3' :  'D7.8',
+
+         'PB8' :  'D8.2',
+         'PB9' :  'D8.3',
+        'PA23' :  'D8.7',
+        'PA24' :  'D8.8',
+
+        'PC22' : 'D10.2',
+        'PC23' : 'D10.3',
+        'PC24' : 'D10.4',
+        'PC25' : 'D10.5',
+        'PC26' : 'D10.6',
+        'PA30' : 'D10.7',
+        'PA31' : 'D10.8',
+
+        'PC16' : 'D11.2',
+        'PC17' : 'D11.3',
+        'PC18' : 'D11.4',
+        'PC19' : 'D11.5',
+        'PC20' : 'D11.6',
+        'PC21' : 'D11.7',
+         'PC2' : 'D11.8',
+         'PC3' : 'D11.9',
+
+         'PC8' : 'D12.2',
+         'PC9' : 'D12.3',
+        'PC10' : 'D12.4',
+        'PC11' : 'D12.5',
+        'PC12' : 'D12.6',
+        'PC13' : 'D12.7',
+        'PC14' : 'D12.8',
+        'PC15' : 'D12.9',
+
+         'PA5' : 'D13.2',
+         'PA6' : 'D13.3',
+        'PC27' : 'D13.4',
+        'PC28' : 'D13.5',
+        'PC29' : 'D13.6',
+         'PC0' : 'D13.7',
+         'PC1' : 'D13.8',
+
+        'PB11' : 'D14.5',
+        'PB12' : 'D14.6',
+        'PB13' : 'D14.7',
+        'PB14' : 'D14.8',
+
+        'PA12' : 'D15.2',
+        'PA11' : 'D15.3',
+        'PA13' : 'D15.4',
+        'PA14' : 'D15.5',
+         'PA7' : 'D15.6',
+         'PA1' : 'D15.7',
+
+        'PA29' : 'D16.2',
+        'PA27' : 'D16.3',
+        'PA24' : 'D16.4',
+        'PA25' : 'D16.5',
+        'PA26' : 'D16.6',
+        'PA30' : 'D16.7',
+        'PA31' : 'D16.8',
+        'PA28' : 'D16.9',
+
+         'PA0' : 'D17.2',
+         'PA1' : 'D17.3',
+         'PA2' : 'D17.4',
+         'PA3' : 'D17.5',
+         'PA4' : 'D17.6',
+         'PC0' : 'D17.7',
+         'PC1' : 'D17.8'
+    },
+    
+#Acqua A5
+    'Acqua_A5' : {
+         'PA1' :  'J1.9',
+         'PA0' : 'J1.10',
+         'PA3' : 'J1.11',
+         'PA2' : 'J1.12',
+         'PA5' : 'J1.13',
+         'PA4' : 'J1.14',
+         'PA7' : 'J1.15',
+         'PA6' : 'J1.16',
+         'PA9' : 'J1.17',
+         'PA8' : 'J1.18',
+        'PA11' : 'J1.19',
+        'PA10' : 'J1.20',
+        'PA13' : 'J1.21',
+        'PA12' : 'J1.22',
+        'PA15' : 'J1.23',
+        'PA14' : 'J1.24',
+        'PC13' : 'J1.25',
+        'PC14' : 'J1.26',
+        'PC11' : 'J1.27',
+        'PC12' : 'J1.28',
+        'PC15' : 'J1.29',
+        'PC10' : 'J1.30',
+        'PE28' : 'J1.31',
+        'PE27' : 'J1.32',
+        'PA25' : 'J1.33',
+        'PA27' : 'J1.35',
+        'PA28' : 'J1.36',
+        'PA29' : 'J1.37',
+        'PA26' : 'J1.38',
+        'PA24' : 'J1.39',
+        'PD20' : 'J1.40',
+        'PD21' : 'J1.41',
+        'PD22' : 'J1.42',
+        'PD23' : 'J1.43',
+        'PD24' : 'J1.44',
+        'PD25' : 'J1.45',
+        'PD26' : 'J1.46',
+        'PD27' : 'J1.47',
+        'PD28' : 'J1.48',
+        'PD29' : 'J1.49',
+
+        'PD31' :  'J2.1',
+        'PD30' :  'J2.2',
+        'PD19' :  'J2.3',
+        'PD13' :  'J2.5',
+        'PD12' :  'J2.6',
+        'PD11' :  'J2.7',
+        'PD10' :  'J2.8',
+        'PD15' :  'J2.9',
+        'PD14' : 'J2.10',
+        'PD17' : 'J2.11',
+        'PD16' : 'J2.12',
+         'PB2' : 'J2.13',
+        'PD18' : 'J2.14',
+         'PB6' : 'J2.15',
+         'PB3' : 'J2.16',
+         'PB7' : 'J2.17',
+        'PB11' : 'J2.18',
+        'PB10' : 'J2.19',
+         'PB4' : 'J2.23',
+         'PB5' : 'J2.25',
+         'PB0' : 'J2.29',
+         'PB1' : 'J2.31',
+        'PB14' : 'J2.32',
+         'PB8' : 'J2.33',
+        'PB15' : 'J2.34',
+         'PB9' : 'J2.35',
+        'PB16' : 'J2.36',
+        'PB12' : 'J2.37',
+        'PB17' : 'J2.38',
+        'PB13' : 'J2.39',
+        'PB18' : 'J2.40',
+        'PB27' : 'J2.42',
+        'PB26' : 'J2.43',
+        'PB25' : 'J2.44',
+        'PB28' : 'J2.45',
+        'PB29' : 'J2.46',
+
+        'PE17' :  'J3.5',
+        'PE16' :  'J3.6',
+        'PE19' :  'J3.7',
+        'PE18' :  'J3.8',
+        'PE15' :  'J3.9',
+        'PE23' : 'J3.10',
+        'PE24' : 'J3.11',
+        'PE25' : 'J3.12',
+        'PE26' : 'J3.13',
+        'PE20' : 'J3.14',
+        'PB22' : 'J3.15',
+        'PB23' : 'J3.16',
+        'PB19' : 'J3.17',
+        'PB21' : 'J3.18',
+        'PB24' : 'J3.19',
+        'PB20' : 'J3.20',
+        'PC23' : 'J3.22',
+        'PC25' : 'J3.23',
+        'PC22' : 'J3.24',
+        'PC24' : 'J3.25',
+        'PC26' : 'J3.26',
+        'PC27' : 'J3.28',
+        'PC28' : 'J3.29',
+        'PC30' : 'J3.30',
+        'PC29' : 'J3.31',
+        'PC31' : 'J3.32',
+        'PA17' : 'J3.33',
+        'PA16' : 'J3.34',
+        'PA19' : 'J3.35',
+        'PA18' : 'J3.36',
+        'PA21' : 'J3.37',
+        'PA20' : 'J3.38',
+        'PA23' : 'J3.39',
+        'PA22' : 'J3.40',
+        'PA31' : 'J3.41',
+        'PA30' : 'J3.42',
+        'PE31' : 'J3.43',
+        'PE29' : 'J3.44',
+        'PC16' : 'J3.45',
+        'PC17' : 'J3.46',
+        'PC18' : 'J3.47',
+        'PC19' : 'J3.48',
+        'PC20' : 'J3.49',
+        'PC21' : 'J3.50'
+    }
+}
+
+def getVersion ():
+	return __version__
 
 def get_gpio_path(kernel_id):
 	global legacy_id
@@ -531,8 +823,8 @@ def get_gpio_path(kernel_id):
 			iopath="%sD%d" % (iopath,kernel_id-96)
 		if kernel_id>=128 and kernel_id<=159:
 			iopath="%sE%d" % (iopath,kernel_id-128)
-			
 	return iopath		
+
 
 def get_kernel_id(connector_name,pin_number):
 	return pinname2kernelid(connector_name + "." +pin_number)
@@ -1362,7 +1654,7 @@ class Daisy7():
 		
 	# Adds to existing options of register	
 	def addOption(self, register, *function_set):
-		options = self.bus.read_byte_data(self.compass_address,register)
+		options = self.i2c_bus.read_byte_data(self.compass_address,register)
 		for function in function_set:
 			options = options | function
 		self.i2c_bus.write_byte_data(self.compass_address,register, options)
@@ -1402,7 +1694,7 @@ class Daisy7():
 		return (degrees, minutes)
 	
 	def compass_getHeadingString(self):
-		(degrees, minutes) = self.getHeading()
+		(degrees, minutes) = self.compass_getHeading()
 		return str(degrees)+"\u00b0 "+str(minutes)+"'"
 		
 	def compass_getAxes(self):
@@ -1536,29 +1828,45 @@ class Daisy10():
 
 	"""
 	DAISY-10 (RS422/RS485) related class
-	http://www.acmesystems.it/DAISY-10'
+	http://www.acmesystems.it/DAISY-10
 	"""
 
 	global serial_ports
+	serial = None
+	fd=None
+	timeout = 0
 
 	def __init__(self, *args, **kwargs):
 		#print serial_ports[kwargs.get('port')]
 		kwargs['port'] = serial_ports[kwargs.get('port')]
-		Serial.__init__(self, *args, **kwargs)
+		self.serial = serial.Serial(*args, **kwargs)
+		#Serial.__init__(self, *args, **kwargs)
 		self.buf = ''
+		self.timeout = self.serial.timeout
 
 	def mode(self,mode):
 		if mode=="RS485":
 			#Read these doc to understand this part
 			#http://lxr.free-electrons.com/source/Documentation/serial/serial-rs485.txt
 			#http://docs.python.org/2/library/struct.html
-			fd=self.fileno()
+			fd=self.serial.fileno()
 			serial_rs485 = struct.pack('hhhhhhhh', 1, 0, 0, 0, 0, 0, 0, 0)
 			fcntl.ioctl(fd,0x542F,serial_rs485)
 		if mode=="RS422":
-			fd=self.fileno()
+			fd=self.serial.fileno()
 			serial_rs485 = struct.pack('hhhhhhhh', 0, 0, 0, 0, 0, 0, 0, 0)
 			fcntl.ioctl(fd,0x542F,serial_rs485)
+	
+	def flushInput(self):
+		self.serial.flushInput()
+    
+	def write(self, msg):
+		self.serial.write(msg)
+		
+	def read(self, num_bytes):
+		self.serial.read(num_bytes)
+    
+
 
 ## DAISY-11 ############################################################
 
@@ -1870,7 +2178,7 @@ class Daisy19():
 		'O1'  :  '2',
 		'O2'  :  '3',
 		'O3'  :  '4',
-		'O4'  :  '5',
+		'O4'  :  '5'
 	}
 
 	outputs_second = {
@@ -1881,7 +2189,7 @@ class Daisy19():
 		'O1'  :  '6',
 		'O2'  :  '7',
 		'O3'  :  '8',
-		'O4'  :  '9',
+		'O4'  :  '9'
 	}
 
 	def __init__(self,connector_id,position,output_id):
