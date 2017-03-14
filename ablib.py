@@ -16,7 +16,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 
-__version__ = 'v1.0.0'
+__version__ = 'v1.1.0'
 
 import os.path
 import platform
@@ -967,6 +967,77 @@ def readU16(bus,address,register):
 def write8(bus,address,reg,value):
 	bus.write_byte_data(address,reg,value)
 
+def get_pwm_channels():
+	iopath = '/sys/class/pwm/pwmchip0/npwm'
+	if os.path.exists(iopath): 
+		f = open(iopath,'r')
+		n = f.read()
+		f.close()
+		return int(n)
+	else:
+		return 0
+
+            
+class PWM():
+	channel_id=None
+	iopath='/sys/class/pwm/pwmchip0/pwm'
+
+	def __init__(self, channel_id, period, pulse):
+	        self.channel_id = channel_id
+		self.iopath = self.iopath + str(channel_id)
+		self.pwm_export()
+		self.pwm_period(period)
+		self.pwm_pulse(pulse)
+
+	def pwm_export(self):
+		if not os.path.exists(self.iopath): 
+			f = open('/sys/class/pwm/pwmchip0/export','w')
+			f.write(str(self.channel_id))
+			f.close()
+
+	def pwm_unexport(self):
+		if not os.path.exists(self.iopath): 
+			f = open('/sys/class/pwm/pwmchip0/unexport','w')
+			f.write(str(self.channel_id))
+			f.close()
+
+	def pwm_period(self, value):
+		if os.path.exists(self.iopath): 
+			f = open(self.iopath + '/period','w')
+			f.write(str(value))
+			f.close()
+
+	def pwm_pulse(self, value):
+		if os.path.exists(self.iopath): 
+			f = open(self.iopath + '/duty_cycle','w')
+			f.write(str(value))
+			f.close()
+
+	def pwm_polarity(self, value):
+		if os.path.exists(self.iopath): 
+			f = open(self.iopath + '/duty_cycle','w')
+			f.write(value)
+			f.close()
+
+	def pwm_polarity_normal(self):
+		self.pwm_polarity("normal")
+
+	def pwm_polarity_inversed(self):
+		self.pwm_polarity("inversed")
+
+	def pwm_enable(self):
+		if os.path.exists(self.iopath): 
+			f = open(self.iopath + '/enable','w')
+			f.write('1')
+			f.close()
+
+	def pwm_disable(self):
+		if os.path.exists(self.iopath): 
+			f = open(self.iopath + '/enable','w')
+			f.write('0')
+			f.close()
+    
+    
 class Pin():
 	"""
 	FOX and AriaG25 pins related class
